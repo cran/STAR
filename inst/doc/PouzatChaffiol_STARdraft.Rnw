@@ -1,0 +1,3079 @@
+\documentclass[11pt,a4paper,english,utf8]{article}
+
+%%\VignetteIndexEntry{Basic STAR features}
+%%\VignetteDepends{STAR}
+
+\usepackage{newcent}
+\usepackage[T1]{fontenc}
+\usepackage{url}
+\usepackage[colorlinks=TRUE,pagebackref=TRUE]{hyperref}
+\usepackage{geometry}
+\usepackage{cite}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsbsy}
+\usepackage{makeidx}
+
+\geometry{verbose,a4paper,tmargin=2.5cm,bmargin=2.5cm,lmargin=3cm,rmargin=3cm}
+
+% General keywords
+\newcommand{\RPlot}{\emph{raster plot}\index{raster plot}}
+\newcommand{\CPlot}{\emph{counting process plot}\index{counting process plot}}
+\newcommand{\ISI}{\emph{inter spike interval}\index{inter spike interval}}
+\newcommand{\isi}{\emph{isi}\index{isi}}
+\newcommand{\CCH}{\emph{cross-correlation histogram}\index{cross-correlation histogram}}
+\newcommand{\PSTH}{\emph{peri stimulus time histogram}\index{peri stimulus time histogram}}
+\newcommand{\psth}{\emph{psth}\index{peri stimulus time histogram}}
+\newcommand{\GSSPSTH}{\emph{smooth peri stimulus time histogram}\index{smooth peri stimulus time histogram}}
+\newcommand{\gsspsth}{\emph{spsth}\index{smooth peri stimulus time histogram}}
+\newcommand{\HPproc}{\emph{homogenous Poisson process}\index{Poisson process!homogenous}}
+\newcommand{\IPproc}{\emph{inhomogenous Poisson process}\index{Poisson process!inhomogenous}}
+\newcommand{\HRproc}{\emph{homogenous renewal process}\index{Renewal process!homogenous}}
+\newcommand{\Cproc}{\emph{Counting process}\index{Counting process}}
+\newcommand{\Pdist}{\emph{Poisson distribution}\index{Poisson distribution}}
+\newcommand{\IID}{\emph{independent and identically distributed}\index{independent and
+    identically distributed}}
+\newcommand{\iid}{\emph{iid}\index{independent and identically distributed}}
+\newcommand{\ML}{\emph{maximum likelihood}\index{maximum likelihood}}
+\newcommand{\MLE}{\emph{maximum likelihood estimate}\index{maximum likelihood estimate}}
+\newcommand{\LF}{\emph{likelihood function}\index{likelihood function}}
+\newcommand{\LLF}{\emph{log likelihood function}\index{log likelihood function}}
+\newcommand{\TQQplot}{\emph{theoretical quantile quantile plot}\index{isi}}
+\newcommand{\AIC}{\emph{Akaike's Information Criterion}\index{AIC}}
+\newcommand{\aic}{\emph{AIC}\index{AIC}}
+\newcommand{\ie}{\emph{i.e.}}
+\newcommand{\eg}{\emph{e.g.}}
+\newcommand{\PDF}{\emph{probability density function}}\index{probability density function}
+\newcommand{\pdf}{\emph{pdf}}\index{probability density function}
+\newcommand{\CDF}{\emph{cumulative distribution function}}\index{cumulative distribution function}
+\newcommand{\cdf}{\emph{cdf}}\index{cumulative distribution function}
+\newcommand{\SF}{\emph{survivor function}}\index{survivor function}
+\newcommand{\IF}{\emph{intensity function}}\index{intensity function}
+\newcommand{\IIF}{\emph{integrated intensity function}}\index{integrated intensity function}
+\newcommand{\Smoothy}{\emph{smoothing spline}}\index{smoothing spline}
+\newcommand{\smp}{\emph{smoothing parameter}}\index{smoothing parameter}
+\newcommand{\TPS}{\emph{thin plate splines}}\index{thin plate splines}
+\newcommand{\CS}{\emph{cubic splines}}\index{cubic splines}
+
+% R related functions and index
+\newcommand{\R}{\textsf{R}\index{R}}
+\newcommand{\SpikeOMatic}{\textsf{SpikeOMatic}\index{R!SpikeOMatic}\index{SpikeOMatic}}
+\newcommand{\RHTML}{\textsf{R2HTML}\index{R!R2HTML}\index{R2HTML}}
+\newcommand{\mgcv}{\textsf{mgcv}\index{R!mgcv}\index{mgcv}}
+\newcommand{\gss}{\textsf{gss}\index{R!gss}\index{gss}}
+\newcommand{\sound}{\textsf{sound}\index{R!sound}\index{sound}}
+\newcommand{\library}{\textsf{library}\index{R!library}\index{library}}
+\newcommand{\search}{\textsf{search}\index{R!search}\index{search}}
+\newcommand{\plot}{\textsf{plot}\index{R!plot}\index{plot}}
+\newcommand{\apropos}{\textsf{apropos}\index{R!apropos}\index{apropos}}
+\newcommand{\data}{\textsf{data}\index{R!data}\index{data}}
+\newcommand{\scan}{\textsf{scan}\index{R!scan}\index{scan}}
+\newcommand{\readBin}{\textsf{readBin}\index{R!readBin}\index{readBin}}
+\newcommand{\readTable}{\textsf{read.table}\index{R!read.table}\index{read.table}}
+\newcommand{\args}{\textsf{args}\index{R!args}\index{args}}
+\newcommand{\paste}{\textsf{paste}\index{R!paste}\index{paste}}
+\newcommand{\installPackages}{\textsf{install.packages}\index{R!install.packages}\index{install.packages}}
+\newcommand{\Rlist}{\textsf{list}\index{R!list}\index{list}}
+\newcommand{\class}{\textsf{class}\index{R!class}\index{class}}
+\newcommand{\unclass}{\textsf{unclass}\index{R!unclass}\index{unclass}}
+\newcommand{\attribute}{\textsf{attribute}\index{R!attribute}\index{attribute}}
+\newcommand{\object}{\textsf{object}\index{R!object}\index{object}}
+\newcommand{\method}{\textsf{method}\index{R!method}\index{method}}
+\newcommand{\length}{\textsf{length}\index{R!length}\index{length}}
+\newcommand{\names}{\textsf{names}\index{R!names}\index{names}}
+\newcommand{\sapply}{\textsf{sapply}\index{R!sapply}\index{sapply}}
+\newcommand{\help}{\textsf{help}\index{R!help}\index{help}}
+\newcommand{\numeric}{\textsf{numeric}\index{R!numeric}\index{numeric}}
+\newcommand{\print}{\textsf{print}\index{R!print}\index{print}}
+\newcommand{\summary}{\textsf{summary}\index{R!summary}\index{summary}}
+\newcommand{\optim}{\textsf{optim}\index{R!optim}\index{optim}}
+\newcommand{\dlnorm}{\textsf{dlnorm}\index{R!dlnorm}\index{dlnorm}}
+\newcommand{\dgamma}{\textsf{dgamma}\index{R!dgamma}\index{dgamma}}
+\newcommand{\dweibull}{\textsf{dweibull}\index{R!dweibull}\index{dweibull}}
+\newcommand{\pinvgauss}{\textsf{pinvgauss}\index{R!pinvgauss}\index{pinvgauss}}
+\newcommand{\diff}{\textsf{diff}\index{R!diff}\index{diff}}
+\newcommand{\hist}{\textsf{hist}\index{R!hist}\index{hist}}
+
+%STAR related functions and index
+\newcommand{\renewalTestPlot}{\textsf{renewalTestPlot}\index{STAR!renewalTestPlot}\index{renewalTestPlot}}
+\newcommand{\asSpikeTrain}{\textsf{as.spikeTrain}\index{STAR!as.spikeTrain}\index{as.spikeTrain}}
+\newcommand{\plotSpikeTrain}{\textsf{plot.spikeTrain}\index{STAR!plot.spikeTrain}\index{plot.spikeTrain}}
+\newcommand{\plotTransformedTrain}{\textsf{plot.transformedTrain}\index{STAR!plot.transformedTrain}\index{plot.transformedTrain}}
+\newcommand{\gammaMLE}{\textsf{gammaMLE}\index{STAR!gammaMLE}\index{gammaMLE}}
+\newcommand{\llogisMLE}{\textsf{llogisMLE}\index{STAR!llogisMLE}\index{llogisMLE}}
+\newcommand{\weibullMLE}{\textsf{weibullMLE}\index{STAR!weibullMLE}\index{weibullMLE}}
+\newcommand{\invgaussMLE}{\textsf{invgaussMLE}\index{STAR!invgaussMLE}\index{invgaussMLE}}
+\newcommand{\compModels}{\textsf{compModels}\index{STAR!compModels}\index{compModels}}
+\newcommand{\spikeTrain}{\textsf{spikeTrain}\index{STAR!spikeTrain}\index{spikeTrain}}
+\newcommand{\transformedTrain}{\textsf{transformedTrain}\index{STAR!transformedTrain}\index{transformedTrain}}
+\newcommand{\STAR}{\textsf{STAR}\index{STAR}}
+\newcommand{\dinvgauss}{\textsf{dinvgauss}\index{STAR!dinvgauss}\index{dinvgauss}}
+\newcommand{\dllogis}{\textsf{dllogis}\index{STAR!dllogis}\index{dllogis}}
+\newcommand{\drexp}{\textsf{drexp}\index{STAR!drexp}\index{drexp}}
+\newcommand{\isiHistFit}{\textsf{isiHistFit}\index{STAR!isiHistFit}\index{isiHistFit}}
+\newcommand{\diffSpikeTrain}{\textsf{diff.spikeTrain}\index{STAR!diff.spikeTrain}\index{diff.spikeTrain}}
+\newcommand{\gf}{\textsf{generic function}\index{STAR!generic function}\index{generic function}}
+\newcommand{\repeatedTrain}{\textsf{repeatedTrain}\index{STAR!repeatedTrain}\index{repeatedTrain}}
+\newcommand{\plotRepeatedTrain}{\textsf{plot.repeatedTrain}\index{STAR!plot.repeatedTrain}\index{plot.repeatedTrain}}
+\newcommand{\printRepeatedTrain}{\textsf{print.repeatedTrain}\index{STAR!print.repeatedTrain}\index{print.repeatedTrain}}
+\newcommand{\psthSTAR}{\textsf{psth}\index{STAR!psth}\index{peri stimulus time histogram}\index{psth}}
+\newcommand{\gsspsthSTAR}{\textsf{gsspsth0}\index{STAR!gsspsth0}\index{smooth peri stimulus time histogram}\index{gsspsth0}}
+\newcommand{\plotGsspsth}{\textsf{plot.gsspsth0}\index{STAR!plot.gsspsth0}\index{smooth
+    peri stimulus time histogram}\index{gsspsth0}}
+\newcommand{\summaryGsspsth}{\textsf{summary.gsspsth0}\index{STAR!summary.gsspsth0}\index{smooth
+    peri stimulus time histogram}\index{gsspsth0}}
+\newcommand{\gssObj}{\textsf{gssObj}\index{STAR!gssObj}\index{gssObj}}
+\newcommand{\reportHTML}{\textsf{reportHTML}\index{reportHTML}\index{STAR!reportHTML}}
+\newcommand{\reportHTMLspikeTrain}{\textsf{reportHTML.spikeTrain}\index{reportHTML.spikeTrain}\index{STAR!reportHTML.spikeTrain}}
+\newcommand{\reportHTMLrepeatedTrain}{\textsf{reportHTML.repeatedTrain}\index{reportHTML.repeatedTrain}\index{STAR!reportHTML.repeatedTrain}}
+
+%mgcv related functions and index
+%\newcommand{\gss}{\textsf{gss}\index{gss}}
+\newcommand{\gamCheck}{\textsf{gam.check}\index{gam.check}\index{mgcv!gam.check}}
+
+
+%\SweaveOpts{prefix.string=figs/}
+
+
+\title{Automatic
+  Spike Train Analysis and HTML Report Generation. An implementation
+  with R, R2HTML and STAR.}
+\author{
+  Christophe Pouzat and Antoine Chaffiol \\
+  \\
+  Laboratoire de Physiologie C\'er\'ebrale, CNRS UMR 8118\\
+  UFR biom\'edicale de l'universit\'e Paris-Descartes\\
+  45, rue des Saints-P\`eres\\
+  75006 Paris, France
+}
+
+
+\makeindex
+
+\begin{document}
+
+% <<cacheSweave set up, echo=FALSE, results=hide>>=
+% setCacheDir("PCdataCachedD")
+% @
+
+<<start up things, echo=FALSE, results=hide>>=
+set.seed(20061001,kind="Mersenne-Twister")
+options(width=60)
+dir.create("report")
+dir.create("figs")              
+@
+
+<<load STAR get STAR doc directory path,echo=FALSE,results=hide>>=
+library(STAR)
+vigdir <- system.file("doc",package="STAR")
+@ 
+
+<<copy some figures from STAR doc to figs directory,echo=FALSE,results=hide>>=
+wd <- getwd()
+src <- paste(vigdir,"/sc1.png",sep="")
+dest <- paste(wd,"/figs/sc1.png",sep="")
+file.copy(src,dest,FALSE)
+src <- paste(vigdir,"/sc2.png",sep="")
+dest <- paste(wd,"/figs/sc2.png",sep="")
+file.copy(src,dest,FALSE)
+src <- paste(vigdir,"/sc3.png",sep="")
+dest <- paste(wd,"/figs/sc3.png",sep="")
+file.copy(src,dest,FALSE)
+src <- paste(vigdir,"/PouzatChaffiol_STARdraft.bib",sep="")
+dest <- paste(wd,"/PouzatChaffiol_STARdraft.bib",sep="")
+file.copy(src,dest,FALSE)
+@
+
+\maketitle
+
+\begin{abstract}
+Multi-electrode arrays (MEA) allow experimentalists to record
+extracellularly from many neurons simultaneously for long
+durations. They therefore often require that the data
+analyst spends a considerable amount of
+time first sorting the spikes, then doing again and again the same
+basic analysis on the different spike trains isolated from the raw
+data. This spike train analysis also often
+generates a considerable amount of figures, mainly diagnostic plots,
+that need to be stored (and/or printed) and \emph{organized} for
+efficient subsequent use. The analysis of our data recorded from the
+first olfactory relay of an insect, the cockroach
+\emph{Periplaneta americana}, has led us to settle on such 
+``routine'' spike train analysis procedures: one applied to spontaneous
+activity recordings (typically epochs of 60s in the
+absence of any stimulation), the other used with recordings
+where a stimulation  was repetitively applied (typically
+15 to 20 epochs of 10 to 15 s with an odor puff). We have
+developed a group of functions implementing a mixture of common and
+original procedures and producing graphical or numerical outputs. These
+functions can be run in batch mode and do moreover produce an organized report
+of their results in an HTML file. A R package: STAR (Spike Train
+Analysis with R) makes these functions readily available to the
+neurophysiologists community. Like R,
+STAR is open source and free. We believe that our basic
+analysis procedures are of general interest but they can also be very
+easily modified to suit user specific needs.    
+\end{abstract}
+
+%\tableofcontents
+
+\section{Introduction}
+\label{sec:introduction}
+
+Multi-electrode arrays (MEA) allow experimentalists to record
+extracellularly from many neurons simultaneously for long
+durations. They therefore often require that the data
+analyst spends a considerable amount of
+time first sorting the spikes, then doing again and again the same
+basic analysis on the different spike trains isolated from the raw
+data. Although this ``basic'' analysis is likely to change from person
+to person, it will usually include, for ``spontaneous activity data'',
+a ``laundry list'' looking like:
+\begin{itemize}
+\item A display of the spike train per se in a
+\RPlot~ or a \CPlot~\cite{CoxLewis_1966,TurnbullEtAl_2005}.
+\item A plot or a numeric quantity testing the stationarity of the train.
+\item Perhaps some standards distributions are fitted to the
+  \ISI \emph{s}~(\isi) and a plot checking the quality of
+  the fits is produced.
+\item If several neurons are recorded simultaneously then
+  \CCH \emph{s}~\cite{PerkelEtAl_1967b,BrillingerEtAl_1976} are likely to
+  be generated.
+\end{itemize}
+
+Then depending on the results of this \emph{systematic
+  and preliminary analysis}~the data analyst will decide to go further
+or to stop. In this scenario two issues arise:
+\begin{itemize}
+\item A lot of time ends up being spent doing fundamentally the same
+  thing on different data. That is a strong incentive for
+  automatization/batch processing.
+\item A lot of analysis results in the form of numerical summaries and
+  graphics are being generated calling for a way to organize and
+  display them in a systematic manner.
+\end{itemize}
+We insist here on the notion of \emph{preliminary}~analysis as opposed
+to the ``refined'' one which ends up being presented and illustrated
+in papers. There is still a long way between the preliminary and final
+analysis requiring a major input from the data analyst. The idea is to
+save time and stay alert for the really important part of the analysis. 
+
+In any case, even if the data analysis software used
+includes routines or functions to implement the individual components
+of our ``laundry list'', making the analysis automatic, \ie, suitable for
+processing in batch mode, can be problematic. Difficulties arise from two
+sources:
+\begin{itemize}
+\item Getting good initial guesses for the optimization routines
+``doing the fits'' can be tedious.
+\item Setting some ``smoothing parameters'', like a bin width, for
+  plots is easily done by a human trying out 
+  several values and looking at the result but is a hard task
+  for a ``blind'' computer.
+\end{itemize}
+We solved these two problems by: 
+\begin{itemize}
+\item Using model reparametrization in the fitting
+  routines~\cite{BatesWatts_1988} making the optimization step more
+  robust with respect to ``bad'' specifications of initial guesses.
+\item Using ``statistical smoothing'' techniques based on \Smoothy~\cite{Wahba_1990,Gu_2002,Gu_2008} for the plots.
+\end{itemize}
+Once these two problems have received a satisfying answers the question
+of a suitable software environment into which these solutions will be
+implemented has to be answered. We chose
+\R\footnote{\url{http://www.r-project.org}}~\cite{R-2.7.2}
+because, among many other reasons:
+\begin{itemize}
+\item It is open source and free.
+\item It runs on any computer likely to be found in a physiology
+  laboratory, PC running Linux or Windows, Mac.
+\item It is a powerful and elegant programming language based on
+  \texttt{Scheme}~\cite{IhakaGentleman_1996,AbelsonEtAl_1996}. 
+\item It uses state of the art numerical libraries (for optimization,
+  random number generation, clustering, etc).
+\item It can be used in batch mode.
+\item It is, in our experience at least, incomparable for
+  graphics\footnote{See for instance:
+    \url{http://www.stat.auckland.ac.nz/~ihaka/787/} and \url{http://addictedtor.free.fr/graphiques/index.php}}.
+\item It is specifically designed to implement a clear and thorough
+  type of data analysis~\cite{Chambers_1999}.
+\item It is very easily extended by its users and, so to speak,
+  encourages its users to become its programmers~\cite{Chambers_2000,Chambers_2008}.
+\end{itemize}
+
+Adopting \R~did moreover provide a pretty straightforward solution to
+our ``analysis results organization and display'' problem. Modern
+computers are all equipped with a web browser and everyone knows how to
+use such a software. HTML files, the type of files that a web browser
+displays, can, as everyone knows, contain text, figures,
+mathematical equations and more. It seems therefore reasonable to use
+the HTML format to organize our analysis results. If one agrees on
+that, the only problem left is the generation of this analysis specific
+HTML file. Well, the good news here is that the problem is solved by
+one of the \R~user contributed add-on packages:
+\RHTML\footnote{\url{http://www.stat.ucl.ac.be/ISpersonnel/lecoutre/R2HTML/}}~
+\cite{Lecoutre_2003}, which turns out to be very simple to use.
+
+<<Nb Fct in STAR, echo=FALSE, results=hide>>=
+nbSTARfct <- length(ls("package:STAR"))-dim(data(package="STAR")$results)[1]
+@
+                  
+Equipped with these tools: \R, statistical smoothing plus model
+reparametrization and \RHTML, we have developed a new \R~add-on
+package:
+\STAR\footnote{\url{http://www.biomedicale.univ-paris5.fr/physcerv/C_Pouzat/STAR.html}}~
+(\textsf{Spike Train Analysis with R}) which like \R~itself is open
+source and free. The package contains \Sexpr{nbSTARfct} 
+functions, most of which are seldom \emph{directly}~used. 
+It has now reached a satisfying maturity when applied to our data recorded from the
+antennal lobe (first olfactory relay) of the cockroach
+\emph{Periplaneta americana}. We think that \STAR~could be useful to
+others and would like to know in any case how it works on different
+types of data. Because \STAR~is open source and because \R~makes it
+very easy for users to develop their own functions, we are confident
+that it could be adapted in a short time to other preparations.
+   
+\section{Methods}
+\label{sec:methods}
+
+\subsection{Animal preparation, recordings and data sets}
+\label{sec:animalPreparation}
+
+\subsubsection{Animal preparation}
+\label{sec:perparation}
+
+Adult male cockroaches, \emph{Periplaneta americana} were used as
+experimental animals. They were reared in an incubator with free
+access to food and water, at $25\,^{\circ}\mathrm{C}$. They were
+cold-anesthetized prior to the experiment. Wings, legs and some mouth
+parts were removed. Each insect was restrained in an acrylic glass
+holder, with its head fixed with dental wax (as shown on Fig. 2
+of~\cite{EscolaEtAl_2008}). The lower part of both
+Antennae was protected
+with plastic tubes (to avoid contact with the physiological
+solution). A window of head cuticle was opened,
+the tracheae on the anterior face of the brain and the sheath
+surrounding the antennal lobes were removed. The esophagus was cut to
+reduce brain movement. Fresh cockroach saline
+was superfused on the brain. The saline composition was: NaCl 130 mM,
+KCl 12 mM, CaCl2 6 mM, MgCl2 3 mM, glucose 23 mM, HEPES 4mM; PH 7,2; 360
+mosmol/kg.  
+
+
+\subsubsection{\emph{In vivo} recordings}
+\label{sec:recordings}
+
+MEA recordings were made in the antennal lobe using 16 sites silicon
+electrodes (Neuronexus Technologies). The probe was gently inserted
+into the antennal lobe until activity appeared at least on 4 recording
+sites. Signals were sampled at 12.8 kHz, band-pass filtered between
+0.3 and 5 kHz and amplified using an IDAC2000 amplifier and its
+Autospike 2000 acquisition program (SYNTECH).
+
+\subsubsection{Olfactory stimulations}
+\label{sec:stimulations}
+
+A main moistened and filtered airflow was placed 3 cm away from the
+antenna, and a secondary stream controlled by a solenoid valve was
+used to deliver odor puffs. A piece of filter paper (3 mm x 20 mm) was
+soaked by  5 $\mu$l of pure aromatic compounds and placed in the
+secondary stream. 0.5 s odor puffs were used.
+
+\subsubsection{Data sets}
+\label{sec:dataSets}
+
+The examples used in this paper come from 4 experiments referred to as:
+\texttt{e060517}, \texttt{e060817}, \texttt{e060824} and
+\texttt{e070528} (the names are built with 2 digits for the year, two
+for the month and 2 for the day). The number of neurons reliably
+isolated in each of these experiments were respectively: 3, 3, 2 and
+4. The spike trains used in this paper, either from spontaneous
+activity or from repeated odor stimulations are all distributed with
+our package \STAR. For each of these experiments the spontaneous
+activity of each neuron recorded for $\sim$~1 mn (58 to 61 s) is
+used. These specific data are referred to as
+\texttt{eNUMBERspont\_NEURON} in
+Sec.~\ref{sec:spontanouesActivityAnalysisResult} and
+Table~\ref{spontStats}. One odor application with ionon (19
+repetitions, 15 s acquired per presentation) is used for
+\texttt{e060517} and the corresponding data set is referred to as:
+\texttt{e060517ionon}. Three odor applications with citronellal,
+terpineol and a 50 / 50 mixture of the two (20 repetitions, 15 s
+acquired per presentation) are used for \texttt{e060817} and the
+corresponding data sets are refered to as: \texttt{e060817citron},
+\texttt{e060817terpi} and \texttt{e060817mix}. One odor application with citral (20
+repetitions, 15 s acquired per presentation) is used for
+\texttt{e060824} and the corresponding data set is referred to as:
+\texttt{e060824citral}. One odor application with citronellal (15
+repetitions, 13 s acquired per presentation) is used for
+\texttt{e070528} and the corresponding data set is referred to as:
+\texttt{e070528citronellal}. A more comprehensive description of these
+data sets can be found in the help files of \STAR.  
+  
+\subsection{Data analysis}
+\label{sec:dataAnalysis}
+
+All the data analysis described in this paper was carried out using
+\R~\cite{R-2.7.2}, some of its user add-on packages and two additional
+packages developed by us,
+\SpikeOMatic\footnote{\url{http://www.biomedicale.univ-paris5.fr/physcerv/C_Pouzat/newSOM/newSOMtutorial/newSOMtutorial.html}.}~
+and
+\STAR\footnote{\url{http://www.biomedicale.univ-paris5.fr/physcerv/C_Pouzat/STAR.html}.}.
+``R is a free software 
+environment for statistical computing and
+graphics. It compiles and runs on a wide variety of UNIX platforms,
+Windows and MacOS.''\footnote{Quotation from the home page of the
+  ``The R Project for Statistical Computing'': \url{http://www.r-project.org/}} 
+The main subject of this paper is a description of some of the features
+of \STAR. Sec.~\ref{sec:gettingR} describes briefly how to obtain and
+install \R~ and \STAR.
+
+\subsection{Getting the spike trains: spike sorting}
+\label{sec:spikeSorting}
+
+Spike sorting was carried out as described in: ``The
+New SpikeOMatic Tutorial''~\cite{Pouzat_2006}. 
+
+\subsection{Spontaneous activity analysis}
+\label{sec:spontanouesActivityAnalysis}
+
+We start with the analysis of ``spontaneous regime'' data. By that we
+mean data recorded in the absence of stimulation. 
+
+\subsubsection{Spike train plot}
+\label{sec:spikeTrainPlot}
+
+The most common way to display a spike train is probably the \RPlot,
+which is fundamentally a one dimensional graph where the occurrence
+time of the spike gives the horizontal coordinate and where a symbol
+like a little vertical bar, or a star (``*'') is used to represent
+each spike. As abundantly illustrated by~\cite[Turnbull et al,
+2005]{TurnbullEtAl_2005} and, in fact, proposed much earlier in the
+first figure of the book of~\cite[Cox and Lewis, 1966]{CoxLewis_1966},
+it is much more informative to plot the cumulative number of events as
+a function of their occurrence time as shown on
+Fig.~\ref{fig:e070528spontN4_ST}, where a 
+classical raster plot is also added at the bottom of the graph. With this
+representation we can see the discharge dynamics much more
+clearly. When the firing rate increases it becomes difficult (if not
+impossible) to see the individual spike symbols on the raster and the
+capacity to distinguish between a moderate and a large increase in
+firing rate is strongly compromised. For instance on the raster of
+Fig.~\ref{fig:e070528spontN4_ST} the burst of spikes coming
+just after second 30 is barely distinguishable from the one coming at
+the end of the recording epoch, while on the cumulative plot we
+clearly see that the slope is much smaller for the second than for the
+first burst implying that the firing rate is smaller in the second
+than in the first burst. The increments of the cumulative plots during
+a burst give us, by definition, the number of spikes in the burst. The
+long burst coming after the 20th second is for instance made of
+roughly 100 spikes. We also see on the figure that their are no
+regular pattern of increase during a burst, implying that the
+successive bursts are made of a variable number of spikes. Clearly, we
+can say a lot more about a spike train by looking at a cumulative plot
+rather than at a raster plot. In addition important non-stationarities
+of the discharge will show up as a curvature of the graph, which will
+be concave for a decelerating discharge and convex for an accelerating
+one.   
+
+We refer to the kind of plot shown on Fig.~\ref{fig:e070528spontN4_ST}
+as a \CPlot~ because that what such plots are called in the
+(statistical) literature dealing with series of (identical) events~\cite{Brillinger_1988b,Johnson_1996}. A
+\Cproc~ is a right continuous step function which undergoes a
+unit jump every time an event occurs. More formally~\cite[Brillinger,
+1988, p190, Eq. 2.1]{Brillinger_1988b}:
+For points $\{ t_j \}$ randomly scattered along a line, the counting
+process  $N(t)$ gives the number of points observed in the interval $(0,t]$.
+\begin{equation}
+  \label{eq:countingProcessDefinition}
+  N(t) = \sharp \{ t_j \; \mathrm{with} \; 0 < t_j \leq t \}
+\end{equation}
+where $\sharp$ stands for the cardinality (number of elements) of a
+set and where the $\{ t_j\}$ stand the the occurrence times of the spikes.
+
+\begin{figure}
+  \centering
+  \includegraphics[width=0.8\textwidth]{figs/e070528spontN4_ST}
+  \caption{A spike train plot of neuron 4, data set, e070528,
+    spontaneous regime. The generation of this figure with \STAR~ is
+    explained in Sec.~\ref{sec:plot.spikeTrain}.}
+  \label{fig:e070528spontN4_ST}
+\end{figure}
+
+\subsubsection{Poisson process}
+\label{sec:poissonProcess}
+
+In the simplest case neuronal discharges are be well approximated by a
+\HPproc\index{Poisson process}, which is formally defined as a
+stochastic process fully characterized by a \emph{time independent
+rate parameter}, $\nu$, such that the number of events
+observed in $(t,t+\tau]$ follows a \Pdist~ with parameter $\nu
+\tau$ (for all $t>0$). Using our previous \Cproc~ definition
+(Eq.~\ref{eq:countingProcessDefinition}) we would write:
+\begin{equation}
+  \label{eq:poissonDistributionDef}
+  \mathrm{Prob} \{ N(t+\tau)-N(t)=n \} = \frac{(\nu \tau)^n}{n!} \exp (-\nu \tau)
+\end{equation}
+The additional requirement of independence of the observed counts,
+$n_1$ and $n_2$, on two \emph{non-overlapping} time intervals:
+$(t_1,t_1+\tau_1]$ and $(t_2,t_2+\tau_2]$, defines a \HPproc. 
+
+The \HPproc~ is not very useful to analyze ``directly'' real spike trains, at least
+not ours, but its extension to time dependent discharges (with the
+\IPproc) is extremely useful to describe mean responses of a single
+neuron to repeated presentations of a given stimulus.  
+% following~\cite[Brown et al., 2002]{BrownEtAl_2002}
+% and even more~\cite[Ogata, 1988]{Ogata_1988}, it is extremly useful to
+% judge the adequacy between fitted discharge models and the data at
+% hand. 
+% To make such a use of it we are going to need few additional
+% properties of the \HPproc~that we state next for completeness.
+
+% It can be shown~\cite[Pelat, 1996, Chap. 9]{Pelat_1996} that the above
+% two conditions (Poisson distribution of the counts and independence)
+% are \emph{equivalent}~to the following two requirements:
+% \begin{itemize}
+% \item The process is \emph{orderly}~, that is:
+%   \begin{equation}
+%     \label{eq:orderlyDef}
+%     \lim_{\tau \to 0} \frac{\mathrm{Prob} \{ N(t+\tau)-N(t) > 1 \}}
+%     {\mathrm{Prob} \{ N(t+\tau)-N(t)=1 \}} = 0
+%   \end{equation}
+%   In words, orderliness implies that events occur separately at most
+%   one at a time (as opposed to clustered events). Given the refractory
+%   period exhibited by neuronal discharges we should not have to worry
+%   to much about fulfilling this assumption in practice (unless we
+%   have a serious spike sorting problem).
+% \item The distribution of time intervals, $I$, between successive events is
+%   \emph{exponential with constant} $\frac{1}{\nu}$, \ie, its \PDF~
+%   is:
+%   \begin{equation}
+%     \label{eq:exponentialPDF}
+%     \mathrm{p}(i) = \nu \, \exp (- \frac{i}{\nu})
+%   \end{equation}
+% \end{itemize}
+
+% The last property we are going to use is~\cite[Cox and Lewis, 1966,
+% Chap. 2]{CoxLewis_1966}: If a \HPproc~ with rate
+% $\nu=1$ is observed during a time $T$ and gives rise to $K$
+% events, then the cumulative distribution function of the event times,
+% $\{t_i \}_{i=1}^K$, is linear with slope $\frac{1}{T}$ on $(0,T]$, is zero below
+% $0$ and 1 above $T$.
+
+\subsubsection{Renewal test plot}
+\label{sec:renewalTestPlot}
+
+When a \HPproc~ is not good enough for the data, the next type of
+models to try is the \HRproc\index{renewal process}. A homogeneous renewal process
+is a process where the intervals between successive events, the \ISI
+s (\isi), come all \emph{independently}~ from the \emph{same}~
+distribution (they are said to be \IID~ or \iid). In other words it is enough to characterize the \isi~
+distribution (together with the distribution of the first event) to
+fully characterize the whole process. 
+
+The definition of a \HRproc~ leads us quickly to a graphical test that
+such processes should pass. Let as before, $\{ t_j\}_{j=1}^{K}$, be
+our $K$ spike times from which we get $K-1$ \isi s: $\{
+isi_j=t_{j+1}-t_j\}_{j=1}^{K-1}$. We can sort these \isi s in
+increasing order to get: $\{ i_{(j)}\}$, where $i_{(j)} \leq i_{(l)}$
+if $j < l$. Let $O_j$ be the rank of interval $i_j$ of the original
+(unsorted sequence) in the new sorted one. To use a concrete example,
+let us assume that we have the following original sequence of 5 \isi s
+(expressed in s):
+<<isi sorting 1, echo=FALSE>>=
+myISI <- c(0.031,0.062,0.073,0.092,0.054)
+names(myISI) <- paste(1:5)
+myISI
+@ 
+Then the $\{O_j \}$ sequence is:
+<<isi sorting 2, echo=FALSE>>=
+rank(myISI) 
+#myISIs <- sort.int(myISI,index.return=TRUE)
+#myISIs$x
+@
+and the corresponding sorted sequence, $\{i_{(j)} \}$, is:
+<<isi sorting 3, echo=FALSE>>=
+sort(myISI)
+@
+
+Now if the $\{i_j\}$ are \iid~ then the $\{O_j \}$ should be very
+nearly so (in the sense that the joint distribution of $(O_j,O_{j+k})$
+should be uniform on $\{1,\ldots,K-1\} \times
+\{1,\ldots,O_j-1,O_j+1,\ldots,K-1\}$ for $k \neq 0$). Then if we plot
+$O_{j+1}$ as a function of $O_j$ we should see the square
+$\{1,\ldots,K-1\} \times \{1,\ldots,K-1\}$ uniformly filled, without a
+pattern.
+
+By plotting $O_{j+1}$ as a function of $O_j$ instead of $i_{j+1}$ as a
+function of $i_j$ we are making a better use of the surface of the
+plot and that is not an aesthetic issue but a way to make the plot more
+informative as shown on Fig.~\ref{fig:e070528spontN4_lagISIplot}. We can then subdivide the surface defined by the 
+$\{1,\ldots,K-1\} \times \{1,\ldots,K-1\}$ square into sub-squares and
+apply a $\chi^2$ test to the contingency table so defined. This is
+what we systematically do with our data. We generate two plots:
+$O_{j+1} \, \mathrm{vs} \, O_j$ and $O_{j+2} \, \mathrm{vs} \, O_j$. We
+subdivide the surface of the plots into squares of identical
+surface. The surface is chosen per default\footnote{See the
+  documentation of the \renewalTestPlot~ function of \STAR} so that
+under the null hypothesis of independence, at least 25 events would fall
+into into each square (this is to insure the applicability of the
+$\chi^2$ test). We do this $\chi^2$ statistics computation not only at
+lag 1 and 2 but also up to lag: $10 \,
+\log_{10}(K-1)$\footnote{$\log_{10}$ stands for the decimal logarithm,
+\ie, $\log_{10}(10)=1$.} (this maximal lag can be
+set by the user). We then also plot this $\chi^2$ statistics as a
+function of the lag and show the 95\% confidence region of the
+$\chi^2$ in the background. 
+
+We also plot the \isi~ empirical autocorrelation function,
+what ~\cite[Perkel et al, 1967]{PerkelEtAl_1967} call the \emph{serial
+correlation coefficients}~ function\footnote{Defined in their Eq. 7
+and 8, p 400}, and test it against the null hypothesis of no
+correlation. 
+
+Fig.~\ref{fig:e070528spontN4_RT} shows what we call a ``renewal test plot'' from which
+it is rather clear that the \HRproc~ model does not apply. These
+renewal test plots are, in our experience, also very sensitive to
+non-stationarities which makes sense given that a \HRproc~ must be
+stationary by definition. The reader is invited to explore this with
+one of the demonstrations of \STAR. Sec.~\ref{sec:renewalTestPlotDemo}
+describes how to do that.
+\begin{figure}
+  \centering
+  \includegraphics[width=1.0\textwidth]{figs/e070528spontN4_RT}
+  \caption{A ``\renewalTestPlot'' of neuron 4, data set, e070528,
+    spontaneous regime. The generation of this figure with \STAR~ is
+    explained in Sec.~\ref{sec:renewalTestPlotDemo}.}
+  \label{fig:e070528spontN4_RT}
+\end{figure}
+
+\subsubsection{Bivariate duration distributions fits}
+\label{sec:bivariateDurationDistributionsFits}
+
+In addition to the renewal test plot we have included in our automatic
+spike train analysis procedures a systematic fit of the empirical \isi~
+distribution with 6 common bivariate duration
+distributions~\cite{Lindsey_2004} whose \PDF s (\pdf s) are:
+\begin{itemize}
+\item log normal\index{distribution!log normal}\index{R!dlnorm}:
+  \begin{equation}
+    \label{eq:dlnorm}
+    \mathrm{dlnorm}(i;\mu,\sigma^2) = \frac{1}{\sqrt{i 2 \pi
+      \sigma^2}} \exp \big( -\frac{1}{2} \frac{(\log i -
+    \mu)^2}{\sigma^2}\big)
+  \end{equation}
+\item inverse Gaussian\index{distribution!inverse Gaussian}\index{STAR!dinvgauss}:
+  \begin{equation}
+    \label{eq:dinvgauss}
+    \mathrm{dinvgauss}(i;\mu,\sigma^2) = \frac{1}{\sqrt{ 2 \pi
+      \sigma^2 i^3}} \exp \big( -\frac{1}{2} \frac{(i -
+    \mu)^2}{i \sigma^2 \mu^2}\big)
+  \end{equation}
+\item gamma\index{distribution!gamma}\index{R!dgamma}:
+  \begin{equation}
+    \label{eq:dgamma}
+    \mathrm{dgamma}(i;\alpha,\beta) =
+    \frac{i^{\alpha-1}}{\beta^{\alpha} \Gamma (\alpha)} \exp (- \frac{i}{\alpha})   
+  \end{equation}
+\item Weibull\index{distribution!Weibull}\index{R!dweibull}:
+  \begin{equation}
+    \label{eq:dweibull}
+    \mathrm{dweibull}(i;\alpha,\beta) =
+    \frac{\alpha}{\beta} (\frac{i}{\beta})^{\alpha-1} \exp (- (\frac{i}{\beta})^{\alpha})
+  \end{equation}
+\item refractory exponential\index{refractory exponential}\index{STAR!drexp}:
+  \begin{equation}
+    \label{eq:drexp}
+    \mathrm{drexp}(i;\alpha,i_{min}) = \left\{ \begin{array}{ll}
+          0 & \mathrm{if} \; i < i_{min} \\
+          \alpha \, \exp (- \alpha \, (i-i_{min})) & \mathrm{if} \; i \geq i_{min}
+          \end{array} \right.
+  \end{equation}
+\item log logistic\index{distribution!log logistic}\index{STAR!dllogis}:
+  \begin{equation}
+    \label{eq:dllogis}
+    \mathrm{dllogis}(i;\mu,\sigma) = \frac{1}{i
+    \sigma} \frac{\exp ( - \frac{\log i - \mu}{\sigma})}{\big(
+    1 + \exp ( - \frac{\log i - \mu}{\sigma})\big)^2}
+  \end{equation}
+\end{itemize}
+The names we have used for these \pdf s like, \dlnorm, are the names
+under which these functions can be called in \R. Parameters estimates for these distributions are obtained by the \ML~
+method~\cite{Kalbfleisch_1985}. The ones of the lognormal, inverse
+Gaussian and refractory exponential distributions are available in
+closed form~\cite{Lindsey_2004}. The ones of the gamma, Weibull and
+log logistic distributions are obtained by numerical optimization
+using function \optim~ for the Weibull and the log logistic distributions
+and using the profile likelihood method for the gamma
+distribution~\cite[Monahan, 2001, pp 210-216]{Monahan_2001}. Initial
+guesses are obtained by the method of moments. In addition
+reparametrization is used systematically for parameters which are
+constrained to be positive\cite{BatesWatts_1988,Monahan_2001}, like the
+two parameters of the gamma distribution. For those the \LLF~ is
+written in term of the log parameters. See the examples of \gammaMLE,
+\weibullMLE~ and \llogisMLE~ for details.
+
+Once some or all of these distributions have been automatically fitted
+the capacities of the models to fit the data are compared with the
+\AIC\footnote{Strictly speaking, the \AIC~being designed to compare models with different number of parameters is not required here, a direct likelihood comparison would lead to the same result. We have included it in \STAR~ since distributions with more than 2 parameters will be implemented in a near future.}~\cite{BurnhamAnderson_2002,Lindsey_2004}. The \AIC~ selects the
+best model among a set of models but does not provide any clue
+regarding how well the best model fits the data. A way to do that is
+build a \TQQplot s (Q-Q plots)~\cite[Chambers et al,
+1983, Chap. 6]{ChambersEtAl_1983} as shown on
+Fig.~\ref{sec:compModels}. On these plots, a perfect fit would fall on
+the diagonal which is drawn in red. 95 and 99\% pointwise confidence
+intervals are also drawn\footnote{To be honest we have to say
+  that Fig.~\ref{fig:e070528spontN1_CM} is one 
+  of our rare examples where one of 6 duration distribution (the inverse
+  Gaussian) is able to fit our data.}.  
+
+\begin{figure}
+  \centering
+  \includegraphics[width=1.0\textwidth]{figs/e070528spontN1_CM}
+  \caption{\TQQplot s of the six fitted duration distribution to the
+    \isi s of neuron 1, data set, e070528,
+    spontaneous regime. The generation of this figure with \STAR~ is
+    explained in Sec.~\ref{sec:compModels}.}
+  \label{fig:e070528spontN1_CM}
+\end{figure}
+
+\subsubsection{Cross correlation histograms}
+\label{sec:cch}
+
+The \CCH s functionalities we have included in \STAR~are very close to
+what is described under this name in~\cite[Brillinger et al,
+1976]{BrillingerEtAl_1976}. The main difference is that we don't use
+the square root transformation to stabilize the variance since there
+is no variance to stabilize under the null hypothesis of no correlation.
+
+In addition \STAR~provides a \emph{smooth}~\CCH~which is build exactly
+in the same way as the \GSSPSTH s of Sec.~\ref{sec:GSSPSTH0}, where they
+are described in detail. Fig.~\ref{fig:reportHTMLst3} shows a screen
+shot of an automatically generated report where both types of \CCH s
+applied to \emph{the same}~data can be seen. 
+
+\subsection{Stimulus response analysis}
+\label{sec:stimulusResponseAnalysis}
+
+We next consider the analysis of repeated stimulations
+like, in our case, 15 to 20 successive applications of an odor puff to the antenna for
+0.5 s every minute. We assume here that the data from a single neuron
+have been formatted such that they are all locked with respect to the
+stimulus onset. Considering that the actual number of spikes generated
+by a neuron during a fixed acquisition epoch using always the same
+stimulus will fluctuate, a matrix is not the proper format to store
+the spike trains of a neuron. The \Rlist~object of \R~is, on the other
+hand, particularly
+well adapted for this task (see Sec.~\ref{sec:commentOnList} for details about \R~\Rlist~objects).
+
+\subsubsection{Raster plot}
+\label{sec:rasterPlot}
+
+Although \CPlot s can be generalized to display successive responses of a
+neuron to repeated stimulations we found the more conventional
+\RPlot~better suited for this task. This is therefore the default
+method we use to display ``raw'' stimulus response data. In our
+automatic spike train analysis and report generation procedure we
+moreover add to it a smooth version of the classical
+\PSTH~\cite{GersteinKiang_1960}. We discuss next these \GSSPSTH s.
+
+\subsubsection{Smooth PSTH}
+\label{sec:GSSPSTH0}
+
+The case for using smooth as opposed to ``classical'' \PSTH s (\psth) has been
+clearly and convincingly made by~\cite[Kass, Ventura and Cai, 2003]{KassEtAl_2003}
+and won't be repeated here. We are instead going to illustrate the principle
+while underlying the difference in methodology. A \GSSPSTH~(\gsspsth) is not only
+statistically more ``efficient'' than a \PSTH~but it also facilitates
+the development of an automatic spike train analysis software being
+not (or at least much less) sensitive to a bin width choice. 
+
+The \psth~(like the \gsspsth) can be given a firm statistical basis as
+soon as one considers that the relevant feature of a single neuron
+response to a given stimulus is its ``average'' or ``mean''
+response, that is, it's \emph{average instantaneous firing rate}. For then if the successive responses of the neuron are
+uncorrelated and are ``collapsed'' or aggregated\footnote{That is, if the trial of origin of the
+spikes is lost (or ignored), as happens upon building a \psth.}, the
+resulting process tends to an \IPproc~\cite[Ventura et al, 2002,
+Sec. 4, p6]{VenturaEtAl_2002}. A \IPproc~is like a
+\HPproc~(Sec.~\ref{sec:poissonProcess}) for which the rate $\nu$ is allowed to be
+time dependent. That is, Eq.~\ref{eq:poissonDistributionDef} has to be
+modified as follows:
+\begin{equation}
+  \label{eq:inhomogenousPoissonDistribution}
+  \mathrm{Prob} \{ N(t+\tau)-N(t)=n \} =
+  \frac{\big( \int_t^{t+\tau}\nu(u) \, du \big)^n}{n!} \exp \big(
+  -\int_t^{t+\tau}\nu(u) \, du \big)
+\end{equation}
+where we see that if $\nu(u)=\mathrm{Cst}$,
+Eq.~\ref{eq:poissonDistributionDef} is obtained. The traditional
+\psth~produces a $\nu$ estimate that is a step function ($\nu$
+is supposed to be constant over the time period spanned by a bin). The
+\gsspsth~produces a smooth estimate of $\nu$. In order to produce
+any of the two estimates, the ``raw'' data (the 15 to 20 spike trains
+of the considered neuron for a given stimulus) have to be
+pre-processed by binning. Then for a \psth, the bin counts are divided
+by the number of trials and by the bin length to obtain the final
+estimate. Approximate confidence intervals are also available using
+the Poisson assumption. Ignoring the statistical efficiency issue, the
+crucial parameter is the bin width (or more generally the sequence of
+bin widths). If the width is set too large, sudden changes of $\nu$ will be missed
+(filtered out) and the estimate will be biased, if set too small
+statistical fluctuations (due to the finite 
+sample size) might be confounded with genuine changes of
+$\nu$ and the estimate will exhibit a large variance. The traditional
+solution to this problem is \emph{interactive}: 
+try out several bin widths and see the results. Having confidence
+intervals clearly helps in making ``objective'' choices with such an
+approach. Fig.~\ref{fig:e070528citronellalN1_psth} illustrates this
+point\footnote{But the reader should keep in mind that if the bin
+  width is chosen \emph{after} seeing the data, the interpretation of
+  the pointwise 95\% confidence interval as: ``The true mean value of
+  $\nu()$ over the bin should fall in the confidence interval 95 out
+  of a 100 experimental replication'', \emph{is not valid anymore}.}.    
+
+The \GSSPSTH~of the present paper produces an estimate, $\hat{\nu}(t)$, of $\nu (t)$
+through a compromise between two antagonistic goals: goodness of fit
+\emph{and}~smoothness (alternative, Bayesian, methods are available to built
+\gsspsth s~\cite{KassEtAl_2003,WallstromEtAl_2008}). If
+$\{x_i\}_{i=1}^N$ is the set of bin centers used in the preprocessing
+stage, $\delta$, the bin width, $M$, the number of stimulus presentations
+and if $\{y_i\}_{i=1}^N$ is the set of corresponding spike counts, the \emph{log likelihood}~of
+$\hat{\nu}$ is:
+\begin{equation}
+  \label{eq:gsspsth0Likelihood}
+  \mathcal{L}(\{ \hat{\nu}(x_i) \}_{i=1}^N) = \sum_{i=1}^N \Big( y_i \, \log \big(
+  \hat{\nu}(x_i) \, \delta \, M\big) - \hat{\nu}(x_i) \, \delta \, M\Big)
+\end{equation}
+Remember that the likelihood is \emph{proportional}~to the probability
+of the data. We are assuming here that the bin width, $\delta$, is small enough to approximate the integral appearing in Eq.~\ref{eq:inhomogenousPoissonDistribution} with:
+\begin{displaymath}
+ \int_{x_i-\frac{\delta}{2}}^{x_i+\frac{\delta}{2}}\nu(u) \, du \approx \nu(x_i) \, \delta \quad \forall \, i \in \{1,\ldots,N\}.
+\end{displaymath}
+This \LLF~(Eq.~\ref{eq:gsspsth0Likelihood}) is maximized by a step
+function whose step height in each bin 
+is given by $\hat{\nu}(x_i) =\frac{y_i}{\delta \, M}$. That is what the classical
+\psth~does. But we want here a \emph{smooth}~estimate of $\nu$. This
+is justified physiologically when the averaged response is estimated
+from neurons getting their input after a rather long sequence of
+events: odor molecule adsorption on the antenna's cuticle,
+transduction involving second messengers in the olfactory receptor
+neurons, spike propagation along the antenna's length, synaptic
+transmission from the receptors to the recorded antennal lobe neurons, feedback
+activity generated within the antennal
+lobe~\cite{Kaissling_1987}. Each one of these stages would smear out
+in time its input even if the latter was a perfect step function. The
+smoothness hypothesis is therefore not a mere mathematically
+convenient requirement but a physiologically grounded assumption. We
+would moreover expect it to hold in a wide range of neurophysiological
+studies and definitely in any setting involving neurones recorded
+after the receptors stage. But arguing that smoothness makes sense
+does not give us directly a way of enforcing it as a constraint in our
+mathematical formulation. There is moreover another obvious constraint
+that $\nu$, being an instantaneous firing rate, must satisfy: it must
+be non-negative. This latter constraint is dealt with as we did
+previously for the non-negative parameters of our duration distributions 
+(Sec.~\ref{sec:bivariateDurationDistributionsFits}): the log of $\nu$
+is estimated directly. To make subsequent equations shorter we will write:
+\begin{equation}
+  \label{eq:etaDef}
+  \eta() = \log \big( \nu() \, \delta \, M\big)
+\end{equation}
+Our previous log likelihood equation, Eq.~\ref{eq:gsspsth0Likelihood}
+becomes:
+\begin{equation}
+  \label{eq:gsspsth0Likelihood2}
+  \mathcal{L}(\{ \hat{\eta}(x_i) \}_{i=1}^N) = \sum_{i=1}^N \Big( y_i
+  \, \hat{\eta}(x_i) - \exp \big( \hat{\eta}(x_i) \big)\Big)
+\end{equation}
+In order to benefit from the powerful
+\Smoothy~results~\cite{Wahba_1990,Gu_2002} we are going to enforce our
+smoothness constraint by forcing the integral of the squared second
+derivative of $\hat{\eta}$ to be finite, that is:
+\begin{equation}
+  \label{eq:etaSmoothConstraint}
+  \int \big( \frac{d^2\hat{\eta}(x)}{dx^2} \big)^2 \, dx \; < \; \infty ,
+\end{equation}
+where the integral is evaluated on a domain containing all the
+$x_i$s. We could here also use first order derivatives as well as
+third or higher order. The key requirement is to take the \emph{integral
+of the square}~of the chosen derivative. Choosing higher order
+derivatives leads to longer and more ``memory hungry'' computations as
+well as to estimates for which, by definition, derivatives at higher
+order do exist. Notice that the penalization is uniform on the
+definition domain of $x$. This is a potential weakness of the approach
+since for instance the \gsspsth~would ideally be flat prior to the
+stimulus onset which would lead one to want to constrain the
+pre-stimulus period to be smoother than the subsequent one.  
+We combine our ``goodness of fit requirement''
+(Eq.~\ref{eq:gsspsth0Likelihood2}) with our ``smoothness'' requirement
+(Eq.~\ref{eq:etaSmoothConstraint}) by finding the smooth
+function $\hat{\eta}$ \emph{minimizing the penalized likelihood}:
+\begin{equation}
+  \label{eq:penalizedLikelihood}
+  - \sum_{i=1}^N \Big( y_i
+  \, \hat{\eta}(x_i) - \exp \big( \hat{\eta}(x_i) \big)\Big) + \lambda
+  \, \int \big( \frac{d^2\hat{\eta}(x)}{dx^2} \big)^2 \, dx ,
+\end{equation}
+where the \smp, $\lambda$, is non negative. The
+first term here is the \emph{opposite} of our log likelihood defined
+by Eq.~\ref{eq:gsspsth0Likelihood2}. Minimizing this term amounts to
+maximizing the log likelihood and therefore to have a ``good'' fit. The
+second term is positive or null. It is null regardless of the value of
+$\lambda$ when $\hat{\nu}$ is a linear function (whose graph is a
+straight line). As shown on Fig.~\ref{fig:lambdaEffect} the chosen value of $\lambda$
+will have a crucial influence on the estimated function. A small value
+will lead to a function matching arbitrarily precisely the data while
+a large value will lead to a linear function (see also
+Fig. 4.1-4.3~\cite[pp 46-47]{Wahba_1990} and Fig. 1.1~\cite[p 3]{Gu_2002}).
+
+\begin{figure}
+  \centering
+  \includegraphics[width=1.0\textwidth]{figs/lambdaEffect}
+  \caption{Influence of \smp~choice. Comparison of fitted \GSSPSTH s
+    using 3 different values for the \smp~$\lambda$. An optimal value,
+    $\lambda_0$ was obtained by the cross-validation method described
+    in the sequel. Two additional were performed with
+    $\frac{\lambda_0}{1000}$ (A) and with $1000 \, \lambda_0$
+    (C). On A,B and C, the ``raw data'' (classical psth built with a
+    bin width of 25 ms) appear as black and the fitted curve appears
+    as red. D, the 3 fits superposed. A small $\lambda$ leads clearly
+    to a ``wiggly'' fit following the data closely, while a large one
+    generates a fit following only the very slow variations of the discharge.}
+  \label{fig:lambdaEffect}
+\end{figure}
+
+
+\paragraph{Three key results}
+
+As mentioned before the \Smoothy~theory is, thanks to the work of
+Grace Wahba and her collaborators~\cite{Wahba_1990,Gu_2002}, extremely well developed. This is
+the availability of a strong theoretical results together with the
+availability of software which lead us to use this methodology. We
+will state here three results which are particularly important.
+
+\subparagraph{Solution of the penalized likelihood problem}
+
+It can be shown~\cite{KimeldorfWahba_1971},~\cite[Chap. 1]{Wahba_1990},~\cite[Chap. 2 and
+5]{Gu_2002} that the function $\hat{\eta}_{\lambda}$ minimizing
+Eq.~\ref{eq:penalizedLikelihood} for a fixed $\lambda$ exists in a \emph{finite dimensional
+  space} whose basis functions can be found. That is,
+$\hat{\eta}_{\lambda}$ can be written as:
+\begin{equation}
+  \label{eq:plSolution}
+  \hat{\eta}_{\lambda}(x) = \sum_{j=0}^1 d_j \, \phi_j(x) \, + \, \sum_{i=1}^N
+  c_i \, R(x_i,x) \, ,
+\end{equation}
+where, assuming that a smoothness constraint on the second order
+derivative is used (Eq.~\ref{eq:etaSmoothConstraint}) and that the
+$x_i$s have been rescaled such that their definition domain is
+$[0,1]$:
+\begin{displaymath}
+  \phi_0(x) = 1  \quad \phi_1(x) = x - 0.5 
+\end{displaymath}
+and
+\begin{displaymath}
+  R(x_i,x) = [(x-\frac{1}{2})^2-\frac{1}{12}] \,
+[(x_i-\frac{1}{2})^2-\frac{1}{12}]/4 - [(\mid x_i-x \mid -
+\frac{1}{2})^4-\frac{1}{2} (\mid x_i-x \mid - \frac{1}{2})^2 + \frac{7}{240}]/24 
+\end{displaymath}
+The coefficients, $d_0$, $d_1$ and $\{ c_i\}_{i=1}^N$ have to be found
+but classical methods for generalized linear models with penalization,
+\emph{penalized iteratively re-weighted least squares}~(PIRLS),
+can be directly used for
+that~\cite[Chap. 3 and 5]{Gu_2002} as detailed in
+Sec.~\ref{sec:lambdaEffectFig} of the Appendix. The user of these
+methods should moreover be aware that at least 2 symmetric matrices
+whose approximate size are $N^2$ have to be allocated during the
+calculations. This is a strong incentive to keep our preprocessing bin
+size $\delta$ (Eq.~\ref{eq:gsspsth0Likelihood}) as ``large'' as possible. If we have
+an acquisition duration of 15 s for each stimulus presentation and if
+we use a $\delta$ of 25 ms we are going to need $2 \cdot (40 \cdot
+15)^2 \approx 2.9$ MB of RAM. If we use instead a $\delta$ of 1 ms
+we are going to need $25^2$ more, that is, roughly 1.8 GB. The
+first memory requirement is negligible for a modern PC, the second is
+likely to induce a ''catastrophic'' computation slowdown due to
+swap space filling if a ``tiny'' laptop is used.
+
+\subparagraph{Smoothing parameter selection by ``performance-oriented iteration''}
+
+The practical use of the \Smoothy~methodology requires the
+availability of an efficient method for setting the \smp,
+$\lambda$ (Fig.~\ref{fig:lambdaEffect}). Assuming that the data where generated by $\eta$,
+we define the ``optimal'' $\lambda_0$ as the one which
+minimizes:
+\begin{displaymath}
+  \frac{1}{N} \, \sum_{i=1}^{N} \Big(\exp \big( \eta(x_i) \big) - \exp
+  \big( \eta_{\lambda}(x_i) \big) \Big) \cdot \Big( \eta(x_i) -
+  \eta_{\lambda}(x_i) \Big)
+\end{displaymath}
+which is the average symmetrize Kullback-Leibler distance over the
+sample points~\cite[p 152]{Gu_2002}. Notice that we do not assume here
+that the ``true'' $\eta$ function satisfies
+Eq.~\ref{eq:etaSmoothConstraint}, it could for instance be
+discontinuous. 
+The PIRLS algorithm used to
+estimate $\widehat{\eta}_{\lambda}$ at fixed $\lambda$ can be combined
+with the \emph{cross-validation}~approaches used to choose $\lambda$
+in \emph{penalized weighted least squares}~(PWLS). Each iteration of the PIRLS
+algorithm is a Newton iteration where a new $\eta_{\lambda}^{(k+1)}$ is
+found as the minimizer of the quadratic approximation of the negative
+(penalized) log likelihood surface at the present $\eta_{\lambda}^{(k)}$
+estimate. But the structure of the quadratic approximation is the same
+as the one of a PWLS. The idea of the \emph{performance-oriented iteration}~is
+then to solve a succession of PWLS problems by
+updating simultaneously the coefficients $d_0$, $d_1$, $\{
+c_i\}_{i=1}^N$ \emph{and}~the smoothing parameter.
+The cross-validation scheme used to estimate $\lambda$ can be shown to
+give on average the optimal $\lambda_{0}$ in the PWLS
+setting~\cite{CravenWahba_1979,Wahba_1990,Gu_2002}. In the present
+setting, strong arguments together with simulations suggests that the
+same holds but no formal proof is available~\cite{Gu_1992b}. Monte-Carlo
+simulations presented in
+Sec.~\ref{sec:MCresults}, Fig.~\ref{fig:LCI} A, demonstrate that the
+\emph{performance-oriented iteration}~
+is performing very well in the present setting. 
+
+For completeness we mention here that theoretically better cross-validation schemes
+have been designed for the present
+setting~\cite{XiangWahba_1996,GuXiang_2001}. These schemes do moreover
+outperform the present \emph{performance-oriented iteration}~scheme in
+multidimensional problems. They can moreover be used in our software
+by calling function \texttt{gsspsth}~instead of \texttt{gsspsth0}. On
+our data we have nevertheless found that they do not improve the
+estimation of $\lambda$ while they require more computation time.
+
+\subparagraph{Confidence intervals}
+
+One of the most surprising results of the \Smoothy~theory is that
+``confidence intervals'' can be
+obtained~\cite{Wahba_1983,Nychka_1988,Wahba_1990,Gu_2002}. That is, a
+confidence band can be constructed around $\hat{\eta}_{\lambda}$ such
+that 95\% of the $\{ \eta(x_i) \}_{i=1}^N$ (where $\eta$ is again the
+truth) are contained in it \emph{on average}. The average coverage probability is
+exact in the Gaussian regression case and approximate in the present
+Poisson regression case. Monte-Carlo simulations presented in the
+Results section demonstrate that they are accurate on average in the
+present setting. \emph{The pointwise coverage probability is nevertheless
+not uniform}. A well known shortcoming for smoothing spline applied to
+Gaussian
+regression~\cite{Wahba_1983,Nychka_1988,CumminsEtAl_2001}. Using Monte
+Carlo simulations we show that the same goes in the present setting. 
+
+\paragraph{Numerical implementation}
+
+All the numerical routines required to implement the
+\Smoothy~methodology of this paper (and much more) are readily
+available in Chong Gu's user contributed \R~package: \gss~(for
+\emph{general smoothing spline})~\cite{Gu_2002,Gu_2008}. The
+\STAR~function, \texttt{gsspsth0}, used to
+generate the \GSSPSTH s of this manuscript does a very simple job indeed:
+\begin{enumerate}
+\item Preprocessing: Given a bin size, $\delta$, whose default is 25 ms, build an
+  \emph{unnormalized} classical \psth~, that is, create a vector,
+  \texttt{Time}, containing the centers of the bins and a vector,
+  \texttt{Count}, containing the total number of spikes (from all the
+  trials) in each bin.
+\item Call \gss~function \texttt{gssanova0}~with \texttt{Count}~as the
+  dependent variable and \texttt{Time} as the independent one,
+  specifying that the \texttt{Poisson}~family has to be used.
+\item Use \gss~function/method \texttt{predict.gssanova0}~(see
+  Sec.~\ref{sec:classMethod} of the Appendix) on the output of
+  \texttt{gssanov0} to get the estimate $\widehat{\eta}_{\lambda}$ and
+  its associated standard error: $se_{\widehat{\eta}_{\lambda}}$.
+\item Postprocessing: Get the estimated instantaneous frequency:
+  \begin{displaymath}
+    \widehat{\nu}_{\lambda} = \frac{\mathrm{e}^{
+  \widehat{\eta}_{\lambda}}}{\delta \, M}
+  \end{displaymath}
+and the upper / lower limit of the
+95 \% confidence band:
+\begin{displaymath}
+  \frac{
+    \mathrm{e}^{\widehat{\eta}_{\lambda} \pm 1.96 \, se_{\widehat{\eta}_{\lambda}}}
+}{
+  \delta \, M
+}
+\end{displaymath}
+
+\end{enumerate}
+
+
+\subsubsection{Empirical check of the \gsspsth~\smp~and
+  confidence intervals by Monte-Carlo simulations}
+\label{sec:empiricalCIcheckWithMC}
+
+In order to check the validity of the \smp~selection
+and of the confidence intervals (or
+confidence bands) of our \gsspsth s we used four data sets which are
+distributed with our package \STAR~(Sec.~\ref{sec:dataSets}). For each
+neuron / data set combination 
+(\emph{e.g.}, \texttt{e070528citronellal\_1}) the following
+simulations and analysis were carried out:
+\begin{enumerate}
+\item Get a \gsspsth, $\hat{\nu}_{\lambda}$,~using bin width of 25 ms
+  which is the default value for this parameter in
+  \STAR~(Fig.~\ref{fig:simPrinciple} A to B).
+\item Extract the \smp~value from the fit result. This value will be the
+  target "best value" for the simulation: $\lambda_0$.
+\item For $j \, = 1 : R$ ($R$ equals 999 or 1000) do:
+  \begin{enumerate}
+  \item Simulate with the \emph{thinning method}~\cite[pp
+    253-256]{Devroye_1986}, ideal spike trains whose discharge is an
+    inhomogeneous Poisson process of instantaneous rate:
+    $\hat{\nu}_{\lambda}$. The number of simulated trains
+    is identical to the number of odor presentations used in the
+    original data set (Fig.~\ref{fig:simPrinciple} B to C).
+  \item Fit a \gsspsth~to the simulated data using a bin width of 25
+    ms to get: $\lambda^{(j)}$ and $\tilde{\nu}_{\lambda}^{(j)}$
+    (Fig.~\ref{fig:simPrinciple} D). 
+  \item Built the 95\% confidence bands around $\tilde{\nu}_{\lambda}^{(j)}$
+    and count the number of points of $\{
+    \hat{\nu}_{\lambda}(x_i)\}_{i=1}^N$ which are inside the band
+    (Fig.~\ref{fig:simPrinciple} D). 
+  \end{enumerate}
+\item Build a box plot or an histogram of the empirical $\lambda$s as
+  well as of the fraction of points of the true curve
+  which are inside the confidence band.
+\item Build the estimate of $\mathrm{E}(\tilde{\eta}_{\lambda})$:
+  \begin{displaymath}
+    \tilde{\eta}_{\lambda,\bullet}(x_i) = \frac{1}{R} \, \sum_{j=1}^R \tilde{\eta}_{\lambda}^{(j)}(x_i) \quad
+    i \in \{1,\ldots,N\}
+  \end{displaymath}
+  to obtain the pointwise \emph{bias} estimate:
+  \begin{equation}
+    \label{eq:biasEstimate}
+    b(x_i) = \hat{\eta}_{\lambda}(x_i) - \tilde{\eta}_{\lambda,\bullet}(x_i) 
+  \end{equation}
+\item Build an estimate of the pointwise coverage probability for a
+  nominal 95 \% confidence interval:
+  \begin{equation}
+    \label{eq:pointwiseCP}
+    cp(x_i) = 1 - \frac{\# \{\hat{\nu}_{\lambda}(x_i) \notin CI(x_i)^{(j)}\}_{j=1}^{R}}{R}
+  \end{equation}
+  where $CI(x_i)^{(j)}$ stands for the 95 \% confidence interval
+  built around $\tilde{\nu}^{(j)}$ at point $x_i$.
+\end{enumerate}
+\begin{figure}
+  \centering
+  \includegraphics[width=1.2\textwidth,angle=0]{figs/simPrinciple}
+  \caption{Simulation principle. A, raster plot of one of the
+    neurons in our data set. B, the \GSSPSTH~ together with the log of
+    the estimated $\lambda$. C, One data set simulated as an
+    inhomogeneous Poisson process using the \GSSPSTH~of B. D, grey
+    band: the 95\% confidence band obtained from the the fit of the
+    \emph{simulated data}; black curve: the ``truth'', that is the
+    \GSSPSTH~used to simulate the data. The X axis has been blanked at the
+    locations where the "truth" is out of the confidence band. The
+    number of points of the truth which are out of the band is
+    indicated together with the total number of points making the
+    \GSSPSTH. The log of the estimated $\lambda$ is also shown. Notice
+    two features on D: The estimated penalty weight, $\lambda$, is
+    larger than the true one, $\lambda_0$, and the
+    grey band is slightly smoother than the truth. The locations where
+    the truth is out of the confidence bands seem to be preferentially associated with
+    times at which the truth undergoes a ``fast'' slope change. This
+    impression is correct as will be shown in Sec.~\ref{sec:MCresults2}.
+  }
+  \label{fig:simPrinciple}
+\end{figure}
+These simulations where carried out on a multi CPU desktop computer
+(Intel Core 2 Quad, 2.4 GHz with 8 Go RAM). In order to exploit fully
+the computing power of the machine, 3 to 4 of the 4 CPUs were used
+simultaneously by parallelazing the above loop. That is when 3,
+respectively 4, CPUs were used a total of 999, respectively 1000, data
+sets were simulated by 3, respectively 4 subprocesses of \R~each one
+carrying out 333, respectively 250, simulations. This trivial
+parallelization is very easily implemented in \R~with the user contributed
+package, \texttt{snow} (for \emph{simple network of workstation}), of
+Tierney, Rossini, Li and
+Sevcikova~\cite{TierneyEtAl_,RossiniEtAl_2003}. An additional element
+is required to ensure good statistical properties of these parallel
+simulations: a random number generator able to generate statistically
+independent streams of random numbers. Pierre L'\'Ecuyer and
+collaborators~\cite{LEcuyerEtAl_2002} developed such a generator which
+has been made available as an \R~user contributed package by Leydold
+and L'\'Ecuyer~\cite{LEcuyerLeydold_2005,Leydold_2007}. 
+
+\subsection{HTML report generation}
+\label{sec:HTMLreportGeneration}
+
+Luckily the HTML report generation is the easiest part of this
+``Methods'' section. HTML files are plain ASCII files where
+\emph{tags}~are used to control the way text, images, etc, appear on
+the browser. These tags are surrounded by ``<>'' symbols~\cite[Chap. 3]{Murrell_2008}. This means
+that as soon one is using an analysis software which can append text
+to an ASCII file it becomes possible to write an HTML file from the
+analysis software. Of course \R~can do that and even better, thanks to
+Eric Lecoutre's package \RHTML~\cite{Lecoutre_2003}, one can write on
+HTML file without having to really learn HTML. Lecoutre short 2003
+paper~\cite{Lecoutre_2003} is enough to get one going within 15
+minutes. 
+
+The ``strategy'' we followed to develop our \reportHTML~methods was
+first to write an \R~script, that is, a succession of \R~commands that
+was satisfying for what we wanted to do (basic analysis of spike
+trains). We then turned this script into a function so that arguments could be
+passed in order to adapt to, say, different data names. After that we used
+\RHTML~function
+\textsf{HTMLInitFile}\index{HTMLInitFile}\index{R2HTML!HTMLInitFile}~
+at the beginning of the function to open the resulting file, we used function
+\textsf{HTML}\index{HTML}\index{R2HTML!HTML}~to write the specific
+computation results we wanted to include in the HTML file, while with function
+\textsf{HTMLInsertGraph}\index{HTMLInsertGraph}\index{R2HTML!HTMLInsertGraph}~we
+were able to
+include graphs in the report. We ended up closing the HTML file with
+function
+\textsf{HTMLEndFile}\index{HTMLEndFile}\index{R2HTML!HTMLEndFile}. It
+could hardly be simpler.
+
+\subsection{Computers and software versions used for the analysis}
+\label{sec:computersInfo}
+
+Unless otherwise stated (\emph{e.g.},
+Sec.~\ref{sec:empiricalCIcheckWithMC}) the analysis described in this
+manuscript was carried out on laptop PC running Linux (Ubuntu
+8.04.1). \R~version 2.7.2 was compiled with
+\texttt{gcc}\footnote{\url{http://gcc.gnu.org}} 4.3.1 using \R 's
+default compilation flags. The hardware characteristics of the laptop
+were: a dual core CPU (Intel Core 2) at 2 GHz with 1 GB of RAM.
+
+\subsection{Reproducing the present analysis}
+\label{sec:reproducibleResearch}
+
+We are trying to implement the rather strict ``reproducible research''
+paradigm of~\cite[Gentleman and Temple-Lang, 2004]{GentlemanTempleLang_2004}. This means that in addition to giving
+access to the software (\STAR) and to the data sets used in the
+present paper we provide a
+\texttt{compendium}~\cite{GentlemanTempleLang_2004} which is
+fundamentally a metafile containing both the text of the present paper
+and the \R~instructions required to \emph{regenerate} all the figures
+and tables of the paper. By editing this metafile the interested
+reader can have access to the complete description of the computations
+involved in the paper and change them if he/she wants. Like the data
+sets, the metafile is distributed with the package.
+The user contributed package \texttt{cacheSweave} of Roger
+Peng~\cite{Peng_2007} has been a tremendous help for developing our
+compendium.
+ 
+\section{Results}
+\label{sec:results}
+
+The general features of our data analysis procedures are illustrated
+and characterized by applying them to each data set of
+Sec.~\ref{sec:dataSets}. The automatic report generation is
+illustrated using 2 data sets: \textsf{e070528spont\_4} for the
+``spontaneous regime'' data and \textsf{e070528citronellal\_1} for the ``stimulus
+response regime'' data. 
+
+\subsection{Spontaneous activity analysis}
+\label{sec:spontanouesActivityAnalysisResult}
+
+Run-time as well as summary data obtained by
+running the same analysis on our 12 spontaneous data sets are
+presented first. The HTML report generated out of one of the data set
+is illustrated next.
+
+\subsubsection{Robustness and run-time of spontaneous activity analysis}
+\label{sec:robAndRT}
+
+<<run time of spontaneous analysis, cache=true, echo=FALSE, results=hide>>=
+sdNames <- c("e060517spont","e060817spont","e060824spont","e070528spont")
+
+onSingleSet <- function(setN) {
+  cmd <- parse(text=paste("data(",setN,")",sep=""))
+  eval(cmd)
+  cmd <- parse(text=paste("assign(\"spontD\",",setN,")",sep=""))
+  eval(cmd)
+  nbSpikes <- sapply(spontD,length)
+  rtt <- sapply(spontD, function(l) {
+                        runtime <- system.time(renewalTestPlot(l))[3]
+                        dev.off()
+                        runtime
+                        }
+               )
+  ft <- sapply(spontD, function(l) system.time(compModels(l,plot=FALSE))[3])
+  rpt <- sapply(1:length(spontD),
+                  function (stIdx) {
+                    system.time(reportHTML(object=spontD[[stIdx]],
+                                           directory="report",
+                                           filename=paste(setN,"_",stIdx,sep=""),
+                                           otherST=spontD[-stIdx],
+                                           laglim=c(-1,1)*0.25,
+                                           forceTT=FALSE,
+                                           maxiter=60)
+                               )[3]
+                   }
+               )
+  result <- data.frame(nbSpikes=nbSpikes,
+                       renewalTestTime=rtt,
+                       fitTime=ft,
+                       report=rpt)
+  rownames(result) <- paste(setN,"_",1:length(spontD),sep="")
+  result
+}
+pResult <- lapply(sdNames,onSingleSet)
+spontStats <- data.frame(N=unlist(lapply(pResult, function(l) l$nbSpikes)),
+                         Renewal=unlist(lapply(pResult, function(l) l$renewalTestTime)),
+                         Fit=unlist(lapply(pResult, function(l) l$fitTime)),
+                         Report=unlist(lapply(pResult, function(l) l$report))
+                         )
+rownames(spontStats) <- unlist(lapply(pResult,rownames))
+@ 
+<<quick regressions on spontStats, cache=true, echo=FALSE, results=hide>>=
+slopeRenewal <- as.vector(round(coef(lm(Renewal~N,data=spontStats))[2]*1000,digits=2))
+slopeFit <- as.vector(round(coef(lm(Fit~N,data=spontStats))[2]*1000,digits=2))
+slopeReport <- as.vector(round(coef(lm(Report~N,data=spontStats))[2]*1000))
+@ 
+
+We do not have a formal proof of the ``robustness'' of our analysis
+routines for the gamma, Weibull and loglogistic models
+but the systematic application of the same automatic methods to
+diverse data sets can be used to argue in favor of it. The renewal
+test plots (Sec.~\ref{sec:renewalTestPlot}) and the 6 bivariate
+duration distribution models
+(Sec.~\ref{sec:bivariateDurationDistributionsFits}) were therefore
+systematically generated and fitted to the 12 spontaneous spike trains
+described in Sec.~\ref{sec:dataSets}. In all the cases the analysis
+did run smoothly. This data set contains moreover only one spike train
+for which one of the bivariate duration density models can be considered
+as reasonable as judged by the Q-Q plot
+(Sec.~\ref{sec:bivariateDurationDistributionsFits},
+Fig.~\ref{fig:e070528spontN1_CM}). Table~\ref{spontStats}~contains the
+run-time results. The run-time of report generation is also given for
+each data set. The latter time is much larger than the previous ones
+because the Q-Q plots are included in the report as well as the smooth
+version of the cross-correlograms. As expected the computation time is proportional to
+the number of spikes in the train with an increase of
+\Sexpr{slopeRenewal}, \Sexpr{slopeFit} and of \Sexpr{slopeReport} ms per
+spike for the renewal test plot, the fits and the reports respectively.
+
+<<spont stats table, echo=FALSE, results=tex>>=
+library(xtable)
+print(xtable(spontStats,label="spontStats",caption="Summary statistics of spontaneous spike train analysis. N: The number of spikes. Renewal: Time (s) required to carry out the computation and to generate the renewal test plot (Sec. \\ref{sec:renewalTestPlot}). Fit: Time (s) required to fit the 6 duration density models (Sec. \\ref{sec:bivariateDurationDistributionsFits}). Report: Time (s) required to generate an HTML report as detailed in Sec. \\ref{sec:autoReportForSpont}")) 
+@ 
+
+\subsubsection{Example of automatic report generation}
+\label{sec:autoReportForSpont}
+
+Our automatic spontaneous spike train analysis and report generation
+procedure, \reportHTMLspikeTrain, performs sequentially the
+``sub-tasks'' of Sec.~\ref{sec:spontanouesActivityAnalysis}. To avoid having too
+many figures of screen shots in this paper we do not show the whole
+report here but it can be seen on our web site\footnote{
+  \url{http://www.biomedicale.univ-paris5.fr/physcerv/C\_Pouzat/STAR\_folder/e070528spontN1.html}} and it can be reproduce by the reader on his/her computer. 
+
+Briefly, a spike train plot (Sec.~\ref{sec:spikeTrainPlot}) is made and
+added to the HTML report. For instance,
+Fig.~\ref{fig:e070528spontN4_ST} can be seen again on the screen
+shot of the HTML report shown in Fig.~\ref{fig:reportHTMLst1}.
+
+\begin{figure}
+  \centering
+  \includegraphics[width=0.8\textwidth]{figs/sc1}
+  \caption{Fig.~\ref{fig:e070528spontN4_ST} as it appears in the
+    automatically generated HTML report.}
+  \label{fig:reportHTMLst1}
+\end{figure}
+
+Summary information including the number of spikes, the times of
+the first and last spikes, the mean \isi, etc, are computed and
+added to the report as can be seen at the bottom of Fig.~\ref{fig:reportHTMLst1}.
+
+The renewal test plots (Sec.~\ref{sec:renewalTestPlot},
+Fig.~\ref{fig:e070528spontN4_RT}) are built and added to the report
+(not shown on screen shots).
+
+% The six duration distributions are
+% fitted (Sec.~\ref{sec:bivariateDurationDistributionsFits}) and the
+% best one is used to apply a time transformation 
+% to the spike train (Sec.~\ref{sec:generalGoodnessOfFit}).
+
+% The Ogata's tests battery is applied
+% and if it passed at the 
+% the 99\% confidence level (see
+% \textsf{?summary.transformedTrain}~for details), the result of the transformation is
+% plotted  as well as all the \TQQplot s of
+% Sec.~\ref{sec:bivariateDurationDistributionsFits}. If argument \textsf{forceTT} is set to
+% \textsf{TRUE} (default), then these last two plots are added even if the
+% best model does not pass the tests. Fig.~\ref{fig:reportHTMLst2}
+% shows a screen shot of the report where the Ogata's tests battery
+% appears. In contrast to the case illustrated in
+% Fig.~\ref{fig:e070528spontN1_OT} it clear that the tests are not
+% passed. The illustrated neuron is not (at all) well described by a \HRproc~model.
+
+% \begin{figure}
+%   \centering
+%   \includegraphics[width=0.8\textwidth]{figs/reportHTMLst2}
+%   \caption{The equivalent of Fig.~\ref{fig:e070528spontN1_OT} this
+%     time with neuron 4 as it appears in the
+%     automatically generated HTML report.}
+%   \label{fig:reportHTMLst2}
+% \end{figure}
+
+If other spike trains (from simultaneously recorded neurons) are
+provided, then \CCH s are estimated. Two estimations methods are
+available (Sec.~\ref{sec:cch}), the
+classical histogram and a smooth version of it. Argument \textsf{chh}
+controls if a single estimation is performed or if both are
+performed. Fig.~\ref{fig:reportHTMLst3} shows a screen shot where the
+\CCH s built with neuron 4 as a reference and neuron 2 as a
+test. Confidence intervals at 95\% level are shown on these two \CCH
+s. The excess of spikes of neuron 2 roughly 100 ms before a spike in
+neuron 4 seems to be significant. 
+
+% If the smooth version is requested a numerical summary of the
+% fit is also printed in the report. Moreover if argument
+% \textsf{doGssCheck} is set to \textsf{TRUE} then check plots
+% (Sec.~\ref{sec:gsspsth0Details} and
+% Fig.~\ref{fig:e070528citronellalN1_gsspsth0GC}) are added to the
+% report.
+
+\begin{figure}
+  \centering
+  \includegraphics[width=0.8\textwidth]{figs/sc2}
+  \caption{\emph{Smooth}~and ``\emph{classical}'' \CCH s between
+    neuron 4 (reference) and neuron 2 (test) as they appear in
+    the automatically generated HTML report. One both plots the dotted
+  lines define a pointwise 95 \% confidence region.}
+  \label{fig:reportHTMLst3}
+\end{figure}
+
+Function \reportHTMLspikeTrain~also writes to disk a data file (using
+the \R~data format) where analysis results are stored. The data
+analyst can therefore quickly go back to the intermediate results if
+something appears suspicious in the report.
+
+
+\subsection{Stimulus response analysis}
+
+Most of the analysis presented in this section will consist in a
+systematic application of the same routines to each of the odor
+response data sets of
+\STAR~(Sec.~\ref{sec:dataSets}). Fig.~\ref{fig:allSPSTHs} shows the
+\GSSPSTH~obtained for each neuron in each data set using our default
+preprocessing bin width. On each plot the 0.5 s opening odor delivery
+valve comes around second 5. The reader can see that the data sets
+exhibit diverse type of responses (but more excitation than
+inhibition). The basal firing rates range from 5 to 40 Hz. The largest
+response is above 80 Hz.
+\label{sec:stimulusResponseAnalysisResult}
+\begin{figure}
+  \centering
+  \includegraphics[width=1\textwidth]{figs/allSPSTHs}
+  \caption{The 18 \GSSPSTH s. All graphs have the same scale. The scale bar on the left
+    side of each plot is drawn between 10 and 20 Hz. The time axis
+    spans 15 s. The estimated \GSSPSTH s
+    are shown as a 95 \% confidence band.}
+  \label{fig:allSPSTHs}
+\end{figure}
+
+\subsubsection{Robustness and run-time of stimulus response analysis}
+\label{sec:robAndSR}
+
+<<run time of stimulus response analysis, cache=true, echo=FALSE, results=hide>>=
+srNames <- c("e060517ionon",
+             "e060817citron",
+             "e060817terpi",
+             "e060817mix",
+             "e060824citral",
+             "e070528citronellal")
+
+onSingleSetB <- function(setN) {
+  cmd <- parse(text=paste("data(",setN,")",sep=""))
+  eval(cmd)
+  cmd <- parse(text=paste("assign(\"responseD\",",setN,")",sep=""))
+  eval(cmd)
+  nbSpikes <- sapply(responseD,function(l) sum(sapply(l,length)))
+  nbStim <- sapply(responseD, length)
+  timeMax <- sapply(responseD, function(l) ceiling(max(unlist(l))))
+  gst <- sapply(responseD,
+                function(l) system.time(gsspsth0(l))[3]
+                )
+  rpt <- sapply(1:length(responseD),
+                function (nIdx) {
+                  l <- responseD[[nIdx]]
+                  system.time(reportHTML(object=l,
+                                         directory="report",
+                                         filename=paste(setN,"_",nIdx,sep=""),
+                                         stim=attr(l,"stimTimeCourse"),
+                                         doTimeTransformation=FALSE
+                                         )
+                              )[3]
+                }
+                                         
+                )
+  result <- data.frame(nbSpikes=nbSpikes,
+                       nbStim=nbStim,
+                       Duration=timeMax,
+                       spsth=gst,
+                       report=rpt)
+  rownames(result) <- paste(setN,"_",1:length(responseD),sep="")
+  result
+}
+pResultB <- lapply(srNames,onSingleSetB)
+responseStats <- data.frame(N=unlist(lapply(pResultB, function(l) l$nbSpikes)),
+                            S=unlist(lapply(pResultB, function(l) l$nbStim)),
+                            Duration=unlist(lapply(pResultB, function(l) l$Duration)),
+                            SPSTH=unlist(lapply(pResultB, function(l) l$spsth)),
+                            Report=unlist(lapply(pResultB, function(l) l$report))
+                            )
+rownames(responseStats) <- unlist(lapply(pResultB,rownames))
+@
+<<quick regressions on spontStats, cache=true, echo=FALSE, results=hide>>=
+slopeSPSTH <- as.vector(round(coef(lm(SPSTH~N,data=responseStats))[2]*1000,digits=2))
+slopeReport2 <- as.vector(round(coef(lm(Report~N,data=responseStats))[2]*1000,digits=2))
+@ 
+
+The approach followed in Sec.~\ref{sec:robAndRT} to study the robustness
+of our routines for the analysis of the spontaneous regime is repeated
+here with the stimulus response regime. \emph{Smooth peri stimulus
+  time histograms} and HTML reports
+were generated using the default preprocessing binwidth (25 ms). In all the cases the analysis
+did run smoothly. Table~\ref{responseStats}~contains the
+run-time results. The computation time is proportional to
+the number of spikes in the train with an increase of
+\Sexpr{slopeSPSTH} and of \Sexpr{slopeReport2} ms per
+spike for the \GSSPSTH s and the reports respectively.
+
+<<stim stats table, echo=FALSE, results=tex>>=
+print(xtable(responseStats,label="responseStats",caption="Summary statistics of stimulus response analysis. N: The total number of spikes. S: The number of stimulations. Duration: Duration (s) of the acquisition for each stimulation. SPSTH: Time (s) required to compute the \\GSSPSTH. Report: Time (s) required to generate an HTML report.")) 
+@ 
+
+
+\subsubsection{Insensitivity to the preprocessing bin width}
+\label{sec:preprocBinWidth}
+
+In order to put on a firmer basis our claim of insensitivity's of our \gsspsth~to the
+preprocessing bin width used, we show on Fig~\ref{fig:binWidth} the
+effect of a 5 times bin width reduction. We use the 3 neurons
+of data set \texttt{e060817mix} because a the variety of neuronal
+responses present in this data set (see also Fig.~\ref{fig:allSPSTHs}
+column 4). In order to make the
+comparison between the two \gsspsth s obtained with the two bin width clearer,
+we only show part of the recording window (from 5 to 10 s) and the
+``coarser'' \gsspsth~generated
+with the largest bin width (25 ms, default value) appears as a 95 \%
+confidence band. The ``finer'' \gsspsth~obtained with the smallest bin width (5
+ms) is shown as a black curve. It can be seen than the finer
+\gsspsth~is ``wigglier'' and \emph{within}~the confidence band of the
+coarser. Using a 5 ms bin width instead of a 25 ms one will therefore
+not essentially change our estimation.
+
+<<bin width 1, echo=FALSE, results=hide>>=
+simpleFit <- function(rt, bw, lwr=5, upr=10,...) {
+  rtN <- deparse(substitute(rt))
+  result <- gsspsth0(as.repeatedTrain(lapply(rt,function(l) l[lwr < l & l < upr])),
+                     binSize=bw,...)[c("freq","ciUp","ciLow","mids")]
+  class(result) <- "simpleFit"
+  result$name <- rtN
+  result$bw <- bw
+  result$call <- match.call()
+  result
+}
+
+plot.simpleFit <- function(x,y,...) plot(x$mids,x$freq,xlab="Time (s)",ylab="Freq. (Hz)",...)
+lines.simpleFit <- function(x,...) lines(x$mids,x$freq,...)
+ribbon <- function(object,...) polygon(c(object$mids,rev(object$mids)),
+                                       c(object$ciUp,rev(object$ciLow)),
+                                       ...)
+  
+@
+
+<<bin width 2, cache=TRUE, echo=FALSE, results=hide>>=
+bwList <- lapply(e060817mix, function(rt) lapply(c(0.025,0.005), function(bw) simpleFit(rt,bw,maxiter=60)))
+@
+<<bin width 3,echo=FALSE,results=hide>>=
+pdf(file="figs/binWidth.pdf",width=10,height=12)
+@
+<<bin width 4, echo=FALSE, results=hide>>=
+layout(matrix(1:3,nrow=3))
+opar <- par(cex=1.002)
+mainV <- paste("e060817mix_",1:3,sep="")
+invisible(sapply(1:3,
+                 function(idx) {
+                   lc <- bwList[[idx]][[1]]
+                   lf <- bwList[[idx]][[2]]
+                   ylim=c(0,max(lc$ciUp))
+                   plot(lc,type="n",ylim=ylim,main=mainV[idx],xaxs="i",yaxs="i")
+                   ribbon(lc,col="grey80",border=NA)
+                   lines(lf)
+                 }
+                 )
+          )
+par(opar)
+@
+<<bin width 5,echo=FALSE,results=hide>>=
+dev.off()
+@
+\begin{figure}
+  \centering
+  \includegraphics[width=0.8\textwidth]{figs/binWidth}
+  \caption{Absence of effect of the preprocessing bin width on the
+    \gsspsth s. The 3 neurons of data set \texttt{e060817mix} are
+    illustrated (3rd column of Fig.~\ref{fig:allSPSTHs}). Each graph shows the \gsspsth~obtained with the
+    default bin width (25 ms) as a grey confidence band. The
+    \gsspsth~obtained with a preprocessing bin width of 5 ms is shown
+    a black curve.}
+  \label{fig:binWidth}
+\end{figure}
+
+
+\subsubsection{Monte Carlo investigation of \Smoothy~\smp~selection
+  and average coverage probability for 95\% confidence intervals}
+\label{sec:MCresults}
+
+As described in Sec.~\ref{sec:empiricalCIcheckWithMC} and
+Fig.~\ref{fig:simPrinciple} an empirical investigation of the cross-validation based
+\smp~selection was carried out together with an empirical determination of the
+\emph{average}~coverage probability of the 95 \% confidence intervals. The results of these Monte Carlo
+simulations are summarized on Fig.~\ref{fig:LCI}. It can be seen that
+the performance-oriented iteration algorithm slightly over smooths the
+data ($\lambda > \lambda_0$ in general). This could very well be due
+to the fact that our preprocessing stage (building a classical
+\psth~with a small bin width) does itself slightly smooth the
+data. This slight over smoothing does nevertheless not seem to have
+any consequence on the average coverage probability. But a relatively
+wide distribution of the average coverage probability is seen ranging
+from 100 to 80 \%.
+
+\begin{figure}
+  \centering
+  \includegraphics[width=1\textwidth]{figs/LCI}
+  \caption{A, Estimated (box plot) and actual (grey point) value of
+    $\log \lambda$. B, Estimated average coverage probability (box
+    plot). The nominal value appears as a dotted line.}
+  \label{fig:LCI}
+\end{figure}
+
+\subsubsection{Monte Carlo investigation of the pointwise coverage probability of the 95\% confidence intervals}
+\label{sec:MCresults2}
+
+Grace Wahba who introduced the method to compute the confidence
+intervals~\cite{Wahba_1983}~also took pain insisting that these
+intervals must be interpreted ``across the function''~\cite[Wahba,
+1990, p 69]{Wahba_1990}, that is, they are valid on \emph{average}
+over the $x_i$s as shown on Fig.~\ref{fig:LCI}. In order to avoid
+wrong interpretations of the confidence intervals we show in this
+section the empirical \emph{pointwise} coverage probability of the
+95\% confidence intervals in three cases. The method used to obtain
+these pointwise coverage probability is explained in
+Sec.~\ref{sec:empiricalCIcheckWithMC}. For each of our 18 cases we
+estimated the pointwise coverage probability and, in each case, we look
+for its smallest value (over the $x_i$). We then selected the three
+cases which gave us the three lowest values. These 3 cases are shown
+on Fig.~\ref{fig:BCP}, the worst case making the left column. We shown
+on this figure (top row) the ``true'' $\eta()$ instead of the $\nu()$ because
+that is what the algorithm is working with and actually
+estimating. The second row shows the estimated bias
+(Sec.~\ref{sec:empiricalCIcheckWithMC}), that is, the difference
+between the ``truth'' and the mean estimated function generated by our
+procedure. The bias is seen to be large where
+\emph{the slope of}~$\eta()$~\emph{changes fast}. This is expected since
+we are penalizing large values of the second derivative of $\eta()$
+(Eq.~\ref{eq:etaSmoothConstraint}
+and~\ref{eq:penalizedLikelihood}). Where the bias is ``large'', the
+pointwise coverage value (Fig.~\ref{fig:BCP}, bottom row) can be much
+smaller than the nominal value (0.95).
+\begin{figure}
+  \centering
+  \includegraphics[width=1\textwidth]{figs/BCP}
+  \caption{The three cases giving the three lowest minimal
+    $cp(x_i)$. Top row (A1, B1,C1): The "true" $\eta$, that is, the
+    one used to simulate the data. Central row (A2, B2,C2): The estimated pointwise bias,
+    $b(x_i)$ (Eq.~\ref{eq:biasEstimate}). Bottom row (A3, B3, C3): The estimated pointwise coverage
+    probabilities for a 95 \% confidence interval. Dotted line: the
+    nominal value. On a given row, all graphs have the same scale.}
+  \label{fig:BCP}
+\end{figure}
+
+\subsubsection{Example of automatic report generation}
+\label{sec:autoReportForStim}
+
+A single screen shot of the full report is shown here. The full report can be seen in our web
+site\footnote{\url{http://www.biomedicale.univ-paris5.fr/physcerv/C_Pouzat/STAR_folder/e070528citronellalN1.html}}
+or, even better, can be generated by the reader as explained in
+Sec.~\ref{sec:automaticAnalysisPlusReport}. 
+Our automatic analysis and its report are now briefly described. A raster plot
+is added first to the report (Sec.~\ref{sec:rasterPlot}) and a
+\gsspsth~(Sec.~\ref{sec:GSSPSTH0}) is superposed to it (see
+Sec.~\ref{sec:gsspsth0Details} for details). Fig.~\ref{fig:reportHTMLrt1}
+shows a screen shot with this raster plot.
+\begin{figure}
+  \centering
+  \includegraphics[width=0.8\textwidth]{figs/sc3}
+  \caption{Raster plot with superposed \GSSPSTH~(red curve) for neuron 1 as it appears in the
+    automatically generated HTML report.}
+  \label{fig:reportHTMLrt1}
+\end{figure}
+The summary of the inhomogeneous Poisson fit (Sec.~\ref{sec:GSSPSTH0})
+leading the \gsspsth~ is added next together with a short summary describing
+how accurate the hypothesis of constant intensity/rate made during the
+preprocessing was given the estimated rate.
+%  (Fig.~\ref{fig:reportHTMLrt2}).
+% \begin{figure}
+%   \centering
+%   \includegraphics[width=0.8\textwidth]{figs/reportHTMLrt2}
+%   \caption{Summary of the \gss~fit for neuron 1 as it appears in the
+%     automatically generated HTML report.}
+%   \label{fig:reportHTMLrt2}
+% \end{figure}
+A plot of the smooth PSTH with approximate 95\% CI is added (not
+shown on screen shot but it looks like the right graph of
+Fig.~\ref{fig:e070528citronellalN1_gsspsth0Demo}). A Graph showing the
+results of the Ogata's battery of tests for point
+processes~\cite{Ogata_1988} when the \gsspsth~is taken has a model of
+the neuron's response to \emph{individual}~stimulation is added next
+(not shown). We do not discuss further this last point here given that
+showing that actual \emph{non averaged}~neuronal discharge are not
+well described by \IPproc~is somewhat showing the obvious. This tests
+will be detailed elsewhere. The impatient reader can of course already
+check the help files of \STAR. 
+% If argument \textsf{doGssCheck}~is
+% set to \textsf{TRUE} a diagnostic plot for the fitted inhomogeneous
+% Poisson model is added (Sec.~\ref{sec:gsspsth0Details} and
+% Fig.~\ref{fig:e070528citronellalN1_gsspsth0GC}). If argument
+% \textsf{doTimeTransformation}~is set to
+% \textsf{TRUE} the estimated integrated intensity is used to perform a
+% time transformation (Sec.~\ref{sec:generalGoodnessOfFit}) and Ogata's
+% test plots are generated as illustrated on
+% Fig.~\ref{fig:reportHTMLrt3}. It is clear from the latter that altough the
+% \IPproc~is a good model for the aggregated response, it is not a good model for
+% the individual ones.
+% \begin{figure}
+%   \centering
+%   \includegraphics[width=0.8\textwidth]{figs/reportHTMLrt3}
+%   \caption{Event if the \IPproc~is a good model for the aggregated
+%     response (Fig.~\ref{fig:e070528citronellalN1_gsspsth0GC}) it is
+%     \emph{not}~an adequate model for the individual responses as shown
+%     by the Ogata's tests battery applied to the time transformed
+%     responses. Screen shot from the
+%     automatically generated HTML report.}
+%   \label{fig:reportHTMLrt3}
+% \end{figure}
+
+
+\section{Discussion}
+\label{sec:discussion}
+
+Experimental techniques used in modern neuroscience research, like MEA
+recordings, tend to generate vast amounts of data. Experience moreover
+shows
+that the analysis of these raw data generates also a lot of
+``secondary'' data. These quantitative aspects represent first a
+serious time challenge simply because data analysis requires time. Our
+answer to that challenge is to make the computer work for us. But
+remembering what John Tukey said: ``Numerical quantities focus on
+expected values, graphical summaries on unexpected values'', 
+we make our computer not only compute but also generate a lot of
+diagnostic plots. Our approach is therefore to implement an automatic ``robust''
+preliminary spike train analysis. Keeping in mind that real data have
+a tendency to wander out of our preset frames ``we'' generate and
+save many plot allowing us to scrutinize our analysis results, judge
+their trustworthiness and if necessary go back to specific stages of
+our analysis.
+
+A second issue neurophysiologists have to face when dealing with MEA
+data analysis is the management of the ``secondary'' data they
+produce. Keeping things organized and easy to retrieve can become a
+problem especially for people who do not want to print 20 graphs per
+analyzed data set and/or have to move around with 20 kg of
+folders. The computer is again the solution when combined with the HTML
+file format. With this approach the 20 kg physical folder becomes an
+icon in the directory arborization of one's home directory. The
+analysis results become also easy to retrieve and can even be directly
+be shown to colleagues in lab meetings, as we hope our few screen
+shots have convinced our reader.
+
+We have implemented both the ``robust spike train analysis with lots
+of plots'' approach and the HTML report generation in an open source
+and free package: \STAR. Being open source our approach can easily
+be tailored to users/data specific needs. For our data it turns out to
+work ``well'' (in the sense of actually doing what we expect it to do)
+and fast (Table~\ref{spontStats} and ~\ref{responseStats}). But we insist again on the preliminary aspect
+of this automatic analysis. Most of the data we showed require more
+sophisticated analysis techniques.
+
+The use of the \Smoothy~methodology has been decisive in the
+development of a robust automatic analysis. We have tried to justify
+this methodological choice on both ``theoretical'' (Sec.~\ref{sec:GSSPSTH0}) and
+``practical'' (Sec.~\ref{sec:MCresults} and ~\ref{sec:MCresults2}) grounds. We
+have moreover tried to carefully illustrate the meaning of the
+confidence intervals obtained with this method
+(Sec.~\ref{sec:MCresults2}). Given these results we would recommend to
+draw \gsspsth s as confidence bands in order to convey a better
+impression of what has been learned from the data. While looking at
+such bands, the reader should keep in mind that a correct pointwise
+confidence interval should be larger where the estimate undergoes a
+fast slope change. If a data analyst wanted to make a strong statement
+about differences of sharp peak on \gsspsth s, we would recommend for
+now a Monte Carlo simulation to be carried out in order to correct for
+the bias of the estimated \gsspsth. We could also consider implementing
+the method described by~\cite[Cummins et al, 2001]{CumminsEtAl_2001}
+to set locally the \smp~(and get a uniform coverage probability).
+We have exposed here only ``the tip of the iceberg'' of what can be
+done with \Smoothy~and spike trains. The methodology can be readily
+extended to multidimensional cases and provide an elegant and
+practical solution to, at least some, conditional intensity estimation
+problems (Pouzat, Chaffiol and Gu \emph{in preparation}).  
+
+\section*{Acknowledgments}
+\label{sec:acknowledgments}
+
+We thank Chong Gu, Laurent Moreaux, Romain Franconville and Alain Marty for
+comments on the manuscript. C. Pouzat was partly supported by a grant
+from the AFM/Decrypton project. A. Chaffiol was supported by a DGA (?) fellowship.
+
+\pagebreak
+\appendix
+
+\section{Reproducing the analysis/figures/report of this paper: A STAR
+tutorial}
+\label{sec:tutorial}
+
+\subsection{Getting \R~and \STAR}
+\label{sec:gettingR}
+
+\R~is an open source and free software that can be downloaded from:
+\url{http://www.r-project.org} or from any mirror site of the
+\textsf{Comprehensive R Archive
+  Network}~(\textsf{CRAN}\index{R!CRAN}). The software
+documentation and user contributed add-on packages can also be
+downloaded from these sites. Precise instructions can be found on how
+to compile or just install from binary files the software on many
+different systems. 
+
+New users can get started by reading through: ``An Introduction to R''
+which comes with the software\footnote{And that can also be found at:
+  \url{http://cran.r-project.org/doc/manuals/R-intro.html}. In
+  addition, among the user contributed documentations, we particularly
+like Emmanuel Paradis: ``R for Beginners''
+(\url{http://cran.r-project.org/doc/contrib/Paradis-rdebuts_en.pdf})
+and Thomas Lumley: ``R fundamentals''
+(\url{http://faculty.washington.edu/tlumley/Rcourse/}).}. Windows
+users who would feel a bit lost with the sober graphical user
+interface which comes with the Windows version should consider
+also installing ``SciViews R GUI'': \url{http://www.sciviews.org/SciViews-R/}.
+
+\STAR~is not yet posted on \textsf{CRAN}\index{R!CRAN} (but it will be
+soon). It can be download from our web site:
+\url{http://www.biomedicale.univ-paris5.fr/physcerv/C_Pouzat/STAR.html}.
+Once the proper version has been downloaded (Linux, which also runs on
+Mac, or Windows), it is installed like any other \R~add-on
+package. Check the documentation of function \installPackages~to see
+how to do it.
+
+\subsection{Preliminary remarks}
+\label{sec:preliminaryRemarks}
+We present in this appendix the full sequence of commands of \R~and
+\STAR~leading to the material, analysis, figures, etc, presented in
+this paper. We also try to give some background information on \R, to
+help motivated users getting started. Here different fonts are going to be used to distinguish
+between what the user types following the \R~prompt
+which will appear like:
+\begin{Schunk}
+  \begin{Sinput}
+    this is what an R input is going to look like in the sequel
+  \end{Sinput}
+\end{Schunk}  
+and what \R~returns which will appear like:
+\begin{Schunk}
+  \begin{Soutput}
+    this is how R outputs will appear
+  \end{Soutput}
+\end{Schunk}  
+
+\subsubsection{Getting help}
+\label{sec:gettingHelp}
+
+Once \R~is started help on any command like \plot~can be obtained by
+typing the command name with ? as a prefix, \ie:
+\begin{Schunk}
+  \begin{Sinput}
+> ?plot
+  \end{Sinput}
+\end{Schunk}  
+It can also be done by using function \help:
+\begin{Schunk}
+  \begin{Sinput}
+> help(plot)
+  \end{Sinput}
+\end{Schunk}  
+
+\subsubsection{Ending an \R~ session}
+\label{sec:endingR}
+
+An \R~session is ended (from the command line) by the command:
+\begin{Schunk}
+  \begin{Sinput}
+> q()
+  \end{Sinput}
+\end{Schunk}  
+
+
+\subsection{Loading \STAR}
+\label{sec:library}
+
+To use \STAR, an add-on package of \R, the user has to load it into
+\R~search path with the \library~function  as follows:
+<<load STAR for demo,eval=FALSE>>=
+library(STAR)
+@ 
+The effect of this command is to make \STAR~functions available to the
+user. Technically it adds a new environment into which the \R~
+interpreter looks for a variable/function name when a command is typed
+in by the user. Function \search~shows the search path used by the interpreter:
+<<search>>=
+search()
+@ 
+
+\subsection{A comment on functions arguments}
+\label{sec:args}
+\R~functions like, \library, often accept many arguments but only a
+few of them have to be \emph{explicitly}~specified by the user. The
+idea is to have both \emph{control}~over the function behavior and
+\emph{ease of use}, \ie, short command lines to type in. This is
+implemented by defining default values for the arguments, either
+explicitly in the argument list of the function or internally
+in the function's body. We can for instance look at the arguments
+accepted by function \library~by using function \args~ with
+\library~as argument:
+\begin{Schunk}
+  \begin{Sinput}
+> args(library)
+  \end{Sinput}
+\end{Schunk}  
+\begin{Schunk}
+  \begin{Soutput}
+function (package, help, pos = 2, lib.loc = NULL, character.only = FALSE, 
+    logical.return = FALSE, warn.conflicts = TRUE, 
+    keep.source = getOption("keep.source.pkgs"), 
+    verbose = getOption("verbose"), version) 
+NULL
+\end{Soutput}
+\end{Schunk} 
+We see that among the 10 possible
+arguments of \library~the specification of a single one,
+\textsf{package}, was sufficient to do what we wanted. Using
+explicitly the other arguments with values different from their
+default ones would have allowed us to have a finer control on what the
+function does. 
+
+We also remark that when we entered \textsf{args(library)} we passed a
+function, \library, as an argument of another function, \args, without
+doing anything special. \R~being based on the \texttt{Scheme}
+language~\cite{IhakaGentleman_1996} \emph{does not}~make any
+differences between functions and other types of objects.
+
+\subsection{Loading data}
+\label{sec:loadingData}
+
+All the data sets used in this paper are part of the \STAR~data sets
+which means they can be loaded with function \data. To load the
+data of the experiment of May 5 2007 in the spontaneous regime which
+is named: ``e070528spont'',  we enter:
+
+<<data use, eval=FALSE>>=
+data(e070528spont)
+@ 
+
+Clearly users will want to use \STAR~with their own data so we give a
+very brief description on how data can be loaded into \R. We will load
+the spike train of the first neuron of the \textsf{e070528spont} data
+set. The data are in ASCII format on a distant machine and we are
+going to load them through a web connection. The data file
+\textsf{e070528spontN1.txt} is located on our lab server at the
+following address:
+\url{http://www.biomedicale.univ-paris5.fr/physcerv/C_Pouzat/STAR_folder/e070528spontN1.txt}.
+The first four lines of the file give some information about the data:
+
+\begin{verbatim}
+Data set: e070528
+Neuron: 1
+Condition: spontaneous activity
+By: Antoine Chaffiol
+\end{verbatim}
+ 
+The following line is blank and the next 336 lines contain the spike
+times. We are going to use function \scan~to load the data. For
+editing purposes, we will moreover build the address of our file piece
+by piece: \textsf{myURL} will contain the url address of the folder
+containing the data file:
+<<assign myURL>>=
+myURL <- "http://www.biomedicale.univ-paris5.fr/physcerv/C_Pouzat/STAR_folder"
+@ 
+and \textsf{myFileName} will be the name of
+the file per se:
+<<assign myFileName>>=
+myFileName <- "e070528spontN1.txt"
+@ 
+Notice the use of, ``\textsf{<-}'', for assignments. The more common
+symbol, ``\textsf{=}'', could have also been used, \eg:
+<<assign myFileName bis, eval=FALSE>>=
+myFileName = "e070528spontN1.txt"
+@
+would have given the same result.
+The file address is then obtained by gluing together
+the 2 pieces,  \textsf{myURL}~ and \textsf{myFileName}, with a
+\textsf{``/''} in between using function \paste: 
+<<form full data names>>=
+myFullName <- paste(myURL,"/",myFileName,sep="")
+@ 
+Function \scan~ finishes the job and reads the data into our work space:
+<<load data of neuron 1 in the spontaneous regime,eval=FALSE>>=
+##<<load data of neuron 1 in the spontaneous regime>>=
+e070528spontN1 <- scan(myFullName,skip=5)
+@ 
+Notice that we used argument, \textsf{skip}, to start reading the file
+from the sixth line. If the data had been on our hard drive in the
+current \textsf{working directory}~(see \textsf{?getwd}~and
+\textsf{?setwd}) of \R, we would have used: 
+<<load data in working directory, eval=FALSE,results=hide>>=
+e070528spontN1 <- scan("e070528spontN1.txt",skip=5)
+@ 
+The first argument of \scan~is just the ``full path'' to
+the data file, it does not matter if the path includes an Internet
+connection or not. Functions are also available to read data in binary
+format (\readBin) or with table structures (\readTable). Check the
+\textsf{R Data Import/Export} manual which comes with the software for
+a comprehensive description of the data import/export capabilities of \R. 
+
+The new object we have loaded into our \R~ workspace,
+\textsf{e070528spontN1}, is a trite vector of double precision
+numbers, that is, a \numeric~ object for \R. To convert it into a
+\spikeTrain~ object that \STAR~ processes in a particular way, we use
+function \asSpikeTrain:
+<<make a spikeTrain out of e070528spontN1,eval=FALSE>>=
+e070528spontN1 <- as.spikeTrain(e070528spontN1)
+@ 
+Function \asSpikeTrain~is not doing much, it merely checks that its
+argument can be a proper \spikeTrain~object (its elements should be
+strictly increasing) and gives \spikeTrain~\class~\attribute~to the
+object it returns. This probably looks obscure at that stage, but it
+should become clearer after the presentation of the ``\class~ /
+\method'' mechanism (Sec.~\ref{sec:classMethod} and~\ref{sec:classMethodInAction}).
+
+\subsection{A Comment on \Rlist~objects}
+\label{sec:commentOnList}
+
+If we look of the type of \object~ we loaded into our work space with
+function \data, by calling function \class~on \textsf{e070528spont}:
+<<class of e070528spont>>=
+class(e070528spont)
+@ 
+we see that it is a \Rlist. \Rlist~\object s are composite \object s whose
+components can be indexed. The different components of a \Rlist~don't
+have to be of the same type (or \class~to use the proper
+terminology). \Rlist~\object s are a very convenient way to keep related
+\object s together. The number of components of a \Rlist~is returned by
+function \length:
+<<length of e070528spont>>=
+length(e070528spont)
+@
+Components of \Rlist~\object s can have names (it usually easier for a
+human to remember a meaningful name than a number) which are
+returned by function \names:
+<<names of e070528spont>>=
+names(e070528spont)
+@
+\Rlist~ components can be accessed either by their index or by their
+name, \ie:
+<<accessing list components by index, eval=FALSE>>=
+e070528spont[[4]]
+@ 
+gives the same result as:
+<<accessing list components by index, eval=FALSE>>=
+e070528spont[["neuron 4"]]
+@
+When dealing with indexed \object s like \Rlist~\object s it often happens
+that we want to perform the same computation on every component of the
+\object . We could for instance want to see what is the \class~of
+\textsf{e070528spont}~ components. A function which will do this task
+and spare us the job of writing a for loop is \sapply
+\footnote{Remember that when \R is running you can always get help on
+  functions, like \sapply, by typing: \textsf{?sapply}.}: 
+<<sapply class on e070528spont>>=
+sapply(e070528spont, class)
+@
+In a similar way we could get the \length~of these \spikeTrain~
+components (if they have one):
+<<sapply length on e070528spont>>=
+sapply(e070528spont, length)
+@
+So we have learned that \textsf{e070528spont}~is a \Rlist~\object~ with
+four named components of class \spikeTrain~ each one with a different
+length. Of course we could have gotten almost the same information by
+looking at the documentation of \textsf{e070528spont}, by typing:
+\textsf{?e070528spont}. 
+
+\subsection{A comment on the \class~/ \method~mechanism}
+\label{sec:classMethod}
+
+If we look at the documentation of function \asSpikeTrain~
+(\textsf{?as.spikeTrain}), which creates \spikeTrain~\object s we
+learn that: ``A spikeTrain object is a
+numeric vector whose elements are strictly increasing (that is,
+something which can be interpreted as a sequence of times of
+successive events with no two events occurring at the same time).'' At
+first sight creating a new type (\class) of \object s which are just
+classical \numeric~vectors with a ``small'' peculiarity (the successive
+elements must be strictly increasing) would suggest that we are
+``over doing it''. This would be ignoring the gains we can obtain from
+the ``\class~/ \method~mechanism''.
+
+When we work regularly with a type of data which has a specific structure and that we
+interpret in a specific way, we quickly end up with a ``standard''
+way of plotting as well as summarizing them numerically. If our
+favorite software provides a general function for plotting \object s
+say, \plot, to use the name of the \R~function doing this job,
+we then often end up writing a new function or a short script which  
+uses \plot~with arguments which are specific to the type of data we
+are looking at. When we have reached this stage it is worth thinking
+of using the ``\class~ \method~ mechanism'' provided by \R\footnote{And of course
+to switch to \R~ if we are not already using it!}. By doing so \emph{we
+will transfer the task of finding the proper}~ \plot~\emph{function from us to
+the}~ \R~\emph{interpreter}. This mechanism works by allowing
+users/programmers to create new ``tailored'' functions for some so called \gf which
+are very frequently used in data analysis, like \plot, \print~ or
+\summary. These \object~specific functions are called ``\method
+s'' and the \object s to which they apply must have a
+``\class''. \textsf{e070528spont[["neuron 4"]]} is for instance an
+\object~of \class~ \spikeTrain~ and we have written a \method,
+\textsf{plot.spikeTrain}, which does the job of generating a plot in a
+\spikeTrain~ specific manner. If we then want to plot
+\textsf{e070528spont[["neuron 4"]]}, we don't have to remember that it
+is a \spikeTrain~ \object~ and enter:
+<<plot.spikeTrain 1, eval=FALSE>>=
+plot.spikeTrain(e070528spont[["neuron 4"]])
+@ 
+but only:
+<<plot.spikeTrain, eval=FALSE>>=
+plot(e070528spont[["neuron 4"]])
+@ 
+When \textsf{plot(x)}~is entered, the \R~interpreter looks
+for the \class~ of \textsf{x},  say,
+\textsf{xClass}, then it looks for a \method~ called:
+\textsf{plot.xClass}. If such a \method~ exists then the executed
+command is in fact: \textsf{plot.xClass(x)}, otherwise it is:
+\textsf{plot.default(x)}. 
+
+What have just written probably looks a bit abstract to the reader who
+has never been exposed to such ideas. It can also look over complicated
+to programmers used to a software environment which does not offer
+this functionality. But it turns out to be an extremely efficient
+concept. With it ``casual'' users can plot \spikeTrain~ \object s and
+obtain immediately a \emph{meaningful}~display without having to know
+everything about the structure of \spikeTrain~ \object s or to know
+all the details of the \plot~ function. For the non-casual user it
+means a big time gain when using the software because commands are much
+shorter. To the programmer it means more work on a short term, but
+significant gains on the mid- to long-term because it generates a better
+software organization.
+
+\subsection{Spike train plot generation}
+\label{sec:plot.spikeTrain} 
+
+By now we should have guessed that Fig.~\ref{fig:e070528spontN4_ST} is simply
+generated by entering:
+<<prepare plot spike train,echo=FALSE,results=hide>>=
+pdf(file="figs/e070528spontN4_ST.pdf",width=8,height=8)
+##e070528spont[[4]]
+##dev.off()
+@ 
+<<plot spike train,fig=FALSE>>=
+plot(e070528spont[[4]])
+@ 
+<<close plot spike train,echo=FALSE,results=hide>>=
+dev.off()
+@ 
+In turns out that we could have generated the same figure (except the
+title which would have been slightly less informative) by entering:
+<<print.spikeTrain 1,eval=FALSE>>=
+e070528spont[[4]]
+@ 
+When the name of an single object (like \textsf{e070528spont[[4]]}) is typed
+in the command line before pressing the return key, the \R~
+interpreter calls function \print~ meaning that a \print~ \method~
+specific to the \class~ of the object is looked for before the
+evaluation is carried out. In the above example that means that what
+is evaluated really is:
+<<print.spikeTrain 2,eval=FALSE>>=
+print.spikeTrain(e070528spont[[4]])
+@
+But we defined \textsf{print.spikeTrain} to be the same as
+\textsf{plot.spikeTrain} meaning that a plot is generated just by
+typing a \spikeTrain~ name at the command line before pressing return.
+
+\subsection{The \class~/ \method~mechanism in action}
+\label{sec:classMethodInAction}
+
+We have just seen how to generate a plot for \spikeTrain~objects
+using transparently the \plotSpikeTrain~\method. As an illustration
+of the usefulness of the \class~/\method~mechanism, the reader can
+try the following sequence of commands. First generate a plot of the
+\spikeTrain~object, \textsf{e070528spontN1}, we created after loading
+some ``raw data'' (Sec.~\ref{sec:loadingData}):
+<<plot of e070528spontN1,eval=FALSE>>=
+plot(e070528spontN1)
+@ 
+Now, remove the \spikeTrain~\class~\attribute~from
+\textsf{e070528spontN1}~with function \unclass: 
+<<unclass e070528spontN1,eval=FALSE>>=
+e070528spontN1 <- unclass(e070528spontN1)
+@ 
+and plot it again:
+<<plot of e070528spontN1 bis,eval=FALSE>>=
+plot(e070528spontN1)
+@   
+It is now plotted as ``trite'' \numeric~object, although its data
+content did not change at all.
+
+\subsection{Renewal test plot}
+\label{sec:renewalTestPlotDemo}
+
+A renewal test plot of neuron 4 of the \textsf{e070528spont} data set
+is obtained by calling function \renewalTestPlot:
+<<prepare renewalTestPlot,echo=FALSE,results=hide>>=
+pdf(file="figs/e070528spontN4_RT.pdf",width=8,height=8)
+##e070528spont[[4]]
+##dev.off()
+@
+<<renewalTestPlot,fig=FALSE>>=
+renewalTestPlot(e070528spont[[4]])
+@
+<<close renewalTestPlot,echo=FALSE,results=hide>>=
+dev.off()
+@
+As mentioned in Sec.~\ref{sec:renewalTestPlot}, these plots are
+sensitive non-stationarity detectors as illustrated in the
+\textsf{pkDataSet1}~ \textsf{demo}~ of \STAR. It uses the \textsf{sPK}
+data set (\textsf{?sPK}) and is launched as follows (the first command
+displays a list of the \textsf{demo}s
+available in \STAR~ with a short description):
+<<pkDataSet1 demo, eval=FALSE>>=
+demo(package="STAR")
+demo(pkDataSet1)
+@ 
+
+\subsection{Why is the rank more informative}
+\label{sec:whyRank}
+
+In Sec.~\ref{sec:renewalTestPlot} we mention that plotting $O_{j+1}$
+as a function of $O_j$  is better than plotting $i_{j+1}$ as a
+function of $i_j$. Let us illustrate this point by generating the
+equivalent of the upper left plot of Fig.~\ref{fig:e070528spontN4_RT}
+in term of $i_j$ instead of $O_j$ to get Fig.~\ref{fig:e070528spontN4_lagISIplot}:
+<<prepare lag isi plot,echo=FALSE,results=hide>>=
+pdf(file="figs/e070528spontN4_lagISIplot.pdf",width=8,height=8)
+@
+<<illustrate isi lag plot>>=
+n4.isi <- diff(e070528spont[["neuron 4"]])
+plot(n4.isi[-length(n4.isi)],
+     n4.isi[-1],
+     pch=".",
+     xlab=expression(i[j]),
+     ylab=expression(i[j+1])
+     )
+     
+@ 
+<<close lag isi plot,echo=FALSE,results=hide>>=
+dev.off()
+@
+\begin{figure}
+  \centering
+  \includegraphics[width=0.6\textwidth]{figs/e070528spontN4_lagISIplot}
+  \caption{Plot of $i_{j+1}$ versus $i_{j}$ (in s) for neuron 4, data set, e070528,
+    spontaneous regime. Compare with upper left plot of Fig.~\ref{fig:e070528spontN4_RT}.}
+  \label{fig:e070528spontN4_lagISIplot}
+\end{figure}
+
+\subsection{Comparing duration distribution}
+\label{sec:compModels}
+
+The \TQQplot s of the six duration distributions fitted to the \isi s
+of neuron 1 of the \textsf{e070528spont} data set are generated by
+function \compModels, which also does the fits and returns the \AIC~
+value for each model.
+<<prepare compModels,echo=FALSE,results=hide>>=
+if (!exists("compN1Results")) 
+  pdf(file="figs/e070528spontN1_CM.pdf",width=8,height=8)
+
+@
+%<<compModels,fig=FALSE,cache=TRUE,echo=FALSE,results=hide>>=
+<<compModels,fig=FALSE,echo=FALSE,results=hide>>=
+if (!exists("compN1Results")) 
+  compN1Results <- compModels(e070528spont[[1]])
+@
+<<dummy compModels, eval=FALSE>>=
+compModels(e070528spont[[1]])
+@ 
+<<print compN1Results,echo=FALSE>>=
+compN1Results
+@ 
+<<close compModels,echo=FALSE,results=hide>>=
+if (!is.null(dev.list())) dev.off()
+@
+
+\subsection{Comparison with the \isi~ histogram}
+\label{sec:isiHistFit}
+
+Although we don't use \isi~ histograms in our automatic spike train
+processing, \STAR~ has a function to plot it together with the fit of one of the
+6 duration distributions: \isiHistFit. To superpose a fitted inverse
+Gaussian density\index{distribution!inverse Gaussian}, to the
+empirical \isi~ histogram of neuron 1 of the
+\textsf{e070528spont} as shown on Fig.~\ref{fig:e070528spontN1_isiFit}, we would enter:
+<<prepare isiHistFit,echo=FALSE,results=hide>>=
+pdf(file="figs/e070528spontN1_isiFit.pdf",width=8,height=8)
+@
+<<isiHistFit,fig=FALSE>>=
+isiHistFit(e070528spont[[1]],"invgauss",xlim=c(0,0.5))
+@
+<<close isiHistFit,echo=FALSE,results=hide>>=
+dev.off()
+@
+\begin{figure}
+  \centering
+  \includegraphics[width=0.8\textwidth]{figs/e070528spontN1_isiFit}
+  \caption{\isi~ histogram (black rectangles) with superposed fitted
+    inverse Gaussian density\index{distribution!inverse Gaussian} (red
+    curve). The 10 histogram bins are set after the fit such that if
+    the fit was good, 10\% of the \isi s would fall into each bin. Data
+    of neuron 1, data set, e070528,
+    spontaneous regime. For more details: \textsf{?isiHistFit}.}
+  \label{fig:e070528spontN1_isiFit}
+\end{figure}
+
+\subsection{Doing your own \isi~ histogram generating function}
+\label{sec:ownISIhistDemo}
+
+We have not included any specific function to create a ``simple''
+histogram from the \isi s of a \spikeTrain~ object. This is because
+the job is done easily by calling two functions successively. The \isi
+s are obtained from a \spikeTrain~ object, like
+\textsf{e070528spont[[4]]}, by calling \method~ \diff~ without further
+arguments (see \textsf{?}\diffSpikeTrain). Then \hist~ is called on
+the result. So we are now ready to create our first \R~ function, \textsf{isiHist4ST}:
+<<isiHist4ST, eval=FALSE>>=
+isiHist4ST <- function(mySpikeTrain,...) hist(diff(mySpikeTrain),...) 
+@ 
+We could even go further and create a \hist~ \method~ for \spikeTrain~
+objects considering that only a histogram of the \isi s of the train
+would make sense:
+<<isiHist4ST, eval=FALSE>>=
+hist.spikeTrain <- function(mySpikeTrain,...) hist(diff(mySpikeTrain),...) 
+@
+Simple isn't it?
+
+
+\subsection{The \repeatedTrain~class and associated methods}
+\label{sec:repeatedTrainClass}
+
+To illustrate the \STAR~functions for dealing with ``stimulus
+responses'' we are going to use the citronellal responses of the previous
+experiment. They are found under the name: \textsf{e070528citronellal}
+in \STAR. 15 stimulations (0.5 s long) were applied with 1 minute
+intervals. As in
+Sec.\ref{sec:loadingData} we load the data into our work space with
+function \data:
+<<load e070528citronellal, eval=FALSE>>=
+data(e070528citronellal)
+@ 
+The data set documentation (\textsf{?e070528citronellal}) tells us
+that \textsf{e070528citronellal}~is a \Rlist~of
+\repeatedTrain~objects, which are themselves \Rlist s of
+\spikeTrain~objects (see \textsf{?as.repeatedTrain}). Like in the
+\spikeTrain~case, the motivation to create a new \class~was to have
+\method s specifically tailored to their objects. For instance the
+\print~\method~(\printRepeatedTrain) generates a raster plot
+(Fig.~\ref{fig:e070528citronellalN1_PrintPlot} Left):
+<<prepare repeatedTrain print plot demo,echo=FALSE,results=hide>>=
+pdf(file="figs/e070528citronellalN1_PrintPlot.pdf",width=10,height=5)
+layout(matrix(1:2,nrow=1))
+plot(e070528citronellal[["neuron 1"]],
+     main="Raster plot")
+@
+<<repeatedTrain print plot demo 1,eval=FALSE>>=
+e070528citronellal[["neuron 1"]]
+@ 
+while the \plot~\method~(\plotRepeatedTrain) does the same while
+allowing for a better control of the output with, for instance, the
+specification of the \textsf{stimTimeCourse}~argument to make the
+stimulus time course appear on the plot
+(Fig.~\ref{fig:e070528citronellalN1_PrintPlot} Right):
+<<repeatedTrain print plot demo 2>>=
+plot(e070528citronellal[["neuron 1"]],
+     stim=c(6.14,6.64),
+     main="e070528citronellal[[\"neuron 1\"]]")
+@ 
+Here we have specified \textsf{stim} instead of
+\textsf{stimTimeCourse}~since partial matching is used\footnote{See
+  Se. 4.3.2: Argument matching of \emph{R Language
+    Definition}. \url{http://cran.r-project.org/doc/manuals/R-lang.html}.}
+when matching functions arguments.  
+<<close repeatedTrain print plot demo,echo=FALSE,results=hide>>=
+dev.off()
+@
+\begin{figure}
+  \centering
+  \includegraphics[width=1.0\textwidth]{figs/e070528citronellalN1_PrintPlot}
+  \caption{Illustration of \print~and \plot~\method s for
+    \repeatedTrain~\object s. The 15 responses of neuron 1, data set
+    \textsf{e070528citronellal} are used here. Left, plot generated
+    by: \textsf{e070528citronellal[["neuron 1"]]}. Right, plot
+    generated by: \textsf{plot(e070528citronellal[["neuron
+      1"]],stim=c(6.14,6.64),main="e070528citronellal[[\"neuron
+      1\"]]")}. Here the user has control over the plot title and
+    argument \textsf{stim} (short for \textsf{stimTimeCourse})
+    controls the presence of the grey rectangle in the background
+    (signalling the odor delivery).}
+  \label{fig:e070528citronellalN1_PrintPlot}
+\end{figure}
+
+\subsection{Classical \psth s with \STAR}
+\label{sec:psthSTAR}
+
+We have also included in \STAR~classes and methods for ``classical''
+\psth s. Function \psthSTAR~plots or returns a \psthSTAR~\object. And
+method \plot~(\textsf{plot.psth}) plots it if it was not already done
+by \psthSTAR. We will use them to illustrate the interactive bin width
+setting process described in Sec.~\ref{sec:GSSPSTH0}. Using the same data
+as in the previous section we will construct 2 \psth s, one with 
+a bin width of 250 ms, the other one with a bin width of 25 ms. The plots (Fig.~\ref{fig:e070528citronellalN1_psth}) also shows
+confidence intervals:
+<<prepare psth demo,echo=FALSE,results=hide>>=
+pdf(file="figs/e070528citronellalN1_psth.pdf",width=10,height=5)
+layout(matrix(1:2,nrow=1))
+@
+<<psth demo>>=
+psth(e070528citronellal[[1]],
+     breaks=seq(0,13,0.250),
+     colCI=2,ylim=c(0,120),
+     sub="bin width: 250 ms",
+     stim=c(6.14,6.64))
+psth(e070528citronellal[[1]],
+     breaks=seq(0,13,0.025),
+     colCI=2,
+     ylim=c(0,120),
+     sub="bin width: 25 ms",
+     stim=c(6.14,6.64))
+@
+<<close psth demo,echo=FALSE,results=hide>>=
+dev.off()
+@
+\begin{figure}
+  \centering
+  \includegraphics[width=1.0\textwidth]{figs/e070528citronellalN1_psth}
+  \caption{Illustration of \psthSTAR~function. The 15 responses of neuron 1, data set
+    \textsf{e070528citronellal} are used here. Left, \psth~obtained
+    with a bin width of 250 ms. Right, \psth~obtained
+    with a bin width of 25 ms. The 95\% confidence region appears in red.}
+  \label{fig:e070528citronellalN1_psth}
+\end{figure}
+
+
+\subsection{Details on \gsspsth s}
+\label{sec:gsspsth0Details}
+
+\emph{Smooth}~\PSTH s are obtained in \STAR~with the
+\gsspsthSTAR~function (see \textsf{?gsspsth0}). Compared to the
+construction of a \psth~, the preprocessing step involves a ``too
+small'' bin width. Here small refers to the fastest time constant
+expected to be present in the instantaneous firing rate. By default it is set to 25
+ms. That can of course be changed by the user. Function
+\gsspsthSTAR~calls function \gss~of Chong Gu's package \gss~after
+this preprocessing. \gss~does the real work of getting the \gsspsth. It
+uses \Smoothy~to get the smooth estimate. 
+
+Continuing with our previous example we would get a \gsspsthSTAR~\object~with:
+<<get gsspsth0 of neuron 1 of e070528citronellal,cache=TRUE>>=
+##<<get gsspsth0 of neuron 1 of e070528citronellal>>=
+n1CitrGSSPSTH0 <- gsspsth0(e070528citronellal[[1]])
+@ 
+It can be worth comparing at that stage the preprocessed data out of
+which the ``smooth'' was constructed with the smooth itself. This is
+illustrated on Fig.~\ref{fig:e070528citronellalN1_gsspsth0Demo} (Left)
+and obtained as follows: 
+<<prepare gsspsth0 demo,echo=FALSE,results=hide>>=
+pdf(file="figs/e070528citronellalN1_gsspsth0Demo.pdf",width=10,height=5)
+layout(matrix(1:2,nrow=1))
+@
+<<compare preprocessed with smooth for gsspsth0 1,cache=TRUE>>=
+##<<compare preprocessed with smooth for gsspsth0 1>>=
+X <- n1CitrGSSPSTH0$mids
+Counts <- n1CitrGSSPSTH0$counts
+theBS <- diff(X)[1]
+nbTrials <- n1CitrGSSPSTH0$nbTrials
+Y <- n1CitrGSSPSTH0$lambdaFct(X)*theBS*nbTrials
+@ 
+<<compare preprocessed with smooth for gsspsth0 2>>=
+plot(X,Counts,type="h",
+     xlab="Time (s)",ylab="Counts per bin",
+     main="Preprocessed data and smooth estimate")
+lines(X,Y,col=2,lwd=1)
+@ 
+The plot of the actual
+\gsspsth~(Fig.~\ref{fig:e070528citronellalN1_gsspsth0Demo}, Right) is
+obtained with the \plot~\method~(\textsf{plot.gsspsth0}):
+<<plot gsspsth0>>=
+plot(n1CitrGSSPSTH0,colCI=2,lwd=1,
+     stim=c(6.14,6.64),
+     ylim=c(0,120))
+@ 
+<<close gsspsth0 demo,echo=FALSE,results=hide>>=
+dev.off()
+@
+\begin{figure}
+  \centering
+  \includegraphics[width=1.0\textwidth]{figs/e070528citronellalN1_gsspsth0Demo}
+  \caption{Illustration of \gsspsthSTAR~function. Same data as
+    Fig.~\ref{fig:e070528citronellalN1_psth}. Left, preprocessed data
+    (black) used to obtain the ``smooth'' (red). Right, \gsspsth~obtained
+    with function \gsspsthSTAR. The 95\% confidence region appears in
+    red. The Y axis scale has been adjusted to facilitate comparison
+    with Fig.~\ref{fig:e070528citronellalN1_psth}.}
+  \label{fig:e070528citronellalN1_gsspsth0Demo}
+\end{figure}
+
+
+\subsection{Automatic analysis and report generation}
+\label{sec:automaticAnalysisPlusReport}
+
+The screen shots making the figures of the ``Results'' section are
+obtained by calling \method~\reportHTML on a \spikeTrain~object
+(\reportHTMLspikeTrain) and on a \repeatedTrain~object (\reportHTMLrepeatedTrain).
+Let us start with the former, assuming that we have created a
+subdirectory \texttt{report} in our current working directory and that
+we want to save our report there:
+<<reportHTML.spikeTrain example 1, eval=FALSE>>=
+reportHTML(object=e070528spont[["neuron 4"]],
+           directory="report",
+           filename="e070528spont_4",
+           otherST=e070528spont[-4],
+           laglim=c(-1,1)*0.25,
+           forceTT=FALSE)
+@
+\begin{Schunk}
+  \begin{Soutput}
+    gss warning in gssanova0: performance-oriented iteration fails to converge
+  \end{Soutput}
+\end{Schunk}  
+Argument \textsf{forceTT}~controls the generation of the \TQQplot
+s and of the Ogata's tests battery. If is is set to \textsf{FALSE}~the
+plots and tests are included in the report only if one of the 6
+duration distribution models fits the data. Passing \Rlist s of spike
+trains via argument \textsf{otherST}~induces the generation of both
+types of \CCH s (by default). The lag of these \CCH s is controlled by
+argument \textsf{laglim}. For more details, see
+\textsf{?reportHTML.spikeTrain}. We see moreover see here that a
+warning is returned: \texttt{gss warning in gssanova0:
+  performance-oriented iteration fails to converge}. After checking
+the documentations of \textsf{reportHTML.spikeTrain},
+\textsf{gsslockedTrain0} and \textsf{gssanova0}, we see that the
+argument \texttt{maxiter} of the latter has to be modified in order to
+perform enough iterations for convegence to be attained. This
+precisely what the ``$\ldots$'' argument of
+\textsf{reportHTML.spikeTrain} allows us to do. We therefore repeat
+the report generation with an additional argument,
+\texttt{maxiter=60}, instead of the implicit default,
+\texttt{maxiter=30}, and see if the warning disappears:
+<<reportHTML.spikeTrain example 2, eval=FALSE>>=
+reportHTML(object=e070528spont[["neuron 4"]],
+           directory="report",
+           filename="e070528spont_4",
+           otherST=e070528spont[-4],
+           laglim=c(-1,1)*0.25,
+           forceTT=FALSE,
+           maxiter=60)
+@ 
+We see that with, \texttt{maxiter=60}, enough iterations have been performed.
+
+The report of a \repeatedTrain~object illustrated in
+Sec.~\ref{sec:stimulusResponseAnalysisResult} is 
+obtained with:
+<<reportHTML.repeatedTrain example, eval=FALSE>>=
+##<<reportHTML.repeatedTrain example,results=hide>>=
+reportHTML(object=e070528citronellal[["neuron 1"]],
+           directory="report",
+           filename="e070528citronellal_1",
+           stim=c(6.14,6.64)
+          )
+@ 
+
+\subsection{Software versions used for this tutorial}
+\label{sec:sessionInfo}
+
+The versions of \R~and of the other packages used in this tutorial are
+obtained with function
+\textsf{sessionInfo}\index{sessionInfo}\index{R!sessionInfo}:
+<<seesionInfo, echo=FALSE>>=
+sessionInfo()
+@
+
+\section{Reproducing Fig.~\ref{fig:lambdaEffect}}
+\label{sec:lambdaEffectFig}
+
+Fig.~\ref{fig:lambdaEffect} is obtained using the version of
+\emph{penalized iteratively re-weighted least squares}~described
+by~\cite[Gu, pp 62, 76 and 151]{Gu_2002}. 
+% There is just one tiny
+% mistake in the second paragraph of Sec. 3.4.1~\cite[p 76]{Gu_2002}, where
+% one should read: ``... solves for $\mathbf{u}$ from $G^T \mathbf{u} = F_2^T
+% \mathbf{Y}$ by forward substitution and for $\mathbf{v}$ from $G
+% \mathbf{v} = \mathbf{u}$ by backsubstitution'' (in the original the
+% roles of $G^T$ and $G$ and of forward and back substitution are
+% reversed). 
+%With this minor correction one first defines a function
+We first define a function
+performing solving a penalized weighted least squares problem
+(together with some associated methods):
+
+<<wPLS functions, results=hide>>=
+ss_lambdaFixed <- function(y,
+                           x,
+                           lambda,
+                           w) {
+
+  rk <- function(x,y) {
+    k2 <- function(x) ((x - 0.5)^2 - 1/12)/2
+    k4 <- function(x) ((x - 0.5)^4 - (x - 0.5)^2/2 + 7/240)/24
+    k2(x) * k2(y) - k4(abs(x - y))
+  }
+
+  S <- cbind(rep(1,length(x)),x-0.5)
+  Q <- outer(x,x,rk)
+  
+  if (!missing(w)) {
+    S <- diag(sqrt(w)) %*% S
+    y <- sqrt(w) * y
+    Q <- diag(sqrt(w)) %*% Q %*% diag(sqrt(w))
+  } else {
+    w <- NULL
+  }
+  
+  Sqr <- qr(S)
+  R <- qr.R(Sqr)
+  theQ <- qr.Q(Sqr,complete=TRUE)
+  tF1 <- t(theQ[,1:2])
+  F2 <- theQ[,-(1:2)]
+  rm(theQ,Sqr)
+
+  n <- length(y)
+  G <- chol(t(F2)%*%Q%*%F2+n*lambda*diag(n-2))
+  u <- forwardsolve(t(G),t(F2)%*%y)
+  ## u <- backsolve(G,t(F2)%*%y)
+  v <- backsolve(G,u)
+  ## v <- forwardsolve(t(G),u)
+  c <- F2 %*% v
+  
+  rightMember <- (tF1 %*% y) - (tF1 %*% Q %*% c)
+  d <- backsolve(R,rightMember)
+  result <- list(x=x,
+                 y=y,
+                 lambda=lambda,
+                 w=w,
+                 n=n,
+                 d=d,
+                 c=c
+                 )
+  ## rm(S,Q,G,tF1,F2,u,v,rightMember,c,d,lambda,n,R,w,x,y)
+  environment(rk) <- globalenv()
+  result$rk <- rk
+  class(result) <- "simpleSmooth"
+  result
+  
+}
+
+plot.simpleSmooth <- function(x,y,...) {
+  plot(x$x,x$y,...)
+}
+
+predict.simpleSmooth <- function(object,newx,...) {
+  if (missing(newx)) newx <- object$x
+  phi <- cbind(rep(1,length(newx)),newx-0.5)
+  R <- outer(newx,object$x,object$rk)
+  if (!is.null(object$w)) as.vector(phi %*% object$d + R %*% (sqrt(object$w)*object$c))
+  else as.vector(phi %*% object$d + R %*% object$c)
+  ##as.vector(phi %*% object$d + R %*% object$c)
+}
+
+@
+We then define a function performing one iteration of the
+\emph{penalized iteratively re-weighted least squares}:
+<<pIRLS fct, cache=true,results=hide>>=
+gs.iter <- function(y,x,lambda,previous,transform=NULL) {
+
+  pred <- predict(previous,x)
+  if (!is.null(transform)) pred <- transform(pred)
+  w <- exp(pred)
+  u <- - y + w
+  pseudo.y <- pred - u / w
+  ss_lambdaFixed(pseudo.y,x,lambda,w)
+  
+}
+@
+We then keep our example of Sec.~\ref{sec:gsspsth0Details} and extract
+the optimal $\lambda_0$ from the \GSSPSTH~fit as well. We also define some
+variables used in the fits at fixed $\lambda$:
+<<Lambda Effect set-up, cache=true, results=hide>>=
+gfit <- evalq(gfit,env=environment(n1CitrGSSPSTH0$lambdaFct))
+Count <- gfit$mf$Count
+Time <- gfit$mf$Time
+refLambda <- 10^(gfit$nlambda)/length(Time)
+T2 <- Time/ceiling(max(Time))
+binSize <- diff(n1CitrGSSPSTH0$mids)[1]
+nbT <- n1CitrGSSPSTH0$nbTrials
+rawHist <- Count/nbT/binSize
+@ 
+We are now ready to perform fits at fixed $\lambda$. We are going to
+use: $\lambda = \frac{\lambda_0}{1000},\lambda_0, 1000 \,
+\lambda_0$. We perform 30 iterations for each. The initial guess for
+the first fit with $\lambda = \lambda_0$ is obtained by fitting a
+Gaussian regression model to the square root of the observed variable
+(\texttt{Count}). The two other fits use the estimate of the end of
+the first fit as an initial guess:
+<<Lambda Effect, cache=true, results=hide>>=
+f0 <- ss_lambdaFixed(sqrt(Count),T2,refLambda)
+f1 <- gs.iter(Count,T2,refLambda,f0,function(x) 0.5*log(x))
+fcurrent <- f1
+for (i in 1:29) fcurrent <- gs.iter(Count,T2,refLambda,fcurrent)
+gcurrent <- fcurrent
+for (i in 1:29) gcurrent <- gs.iter(Count,T2,refLambda*1000,gcurrent)
+hcurrent <- fcurrent
+for (i in 1:29) hcurrent <- gs.iter(Count,T2,refLambda/1000,hcurrent)
+@ 
+
+<<prepare IRLS illustration 0,echo=FALSE,results=hide>>=
+pdf(file="figs/lambdaEffect.pdf",width=8,height=8)
+@
+<<IRLS illustration 0, echo=FALSE, results=hide>>=
+layout(matrix(1:4,2,2,byrow=TRUE))
+par(mar=c(5,4,3,2))
+plot(Time,rawHist,type="l",
+     xlab="",ylab="Freq. (Hz)",
+     main=expression(lambda == lambda[0]/1000))
+mtext("A",side=3,adj=0,line=2)
+abline(h=0)
+lines(Time,exp(predict(hcurrent,T2))/nbT/binSize,col=2,lwd=2)
+legend(0,100,
+       c("\"raw\" data",
+         "fit"),
+       col=c(1,2),lty=c(1,1,1),lwd=c(2,2),bty="n")
+
+plot(Time,rawHist,type="l",
+     xlab="",ylab="",
+     main=expression(lambda == lambda[0]))
+mtext("B",side=3,adj=0,line=2)
+abline(h=0)
+lines(Time,exp(predict(fcurrent,T2))/nbT/binSize,col=2,lwd=2)
+legend(0,100,
+       c("\"raw\" data",
+         "fit"),
+       col=c(1,2),lty=c(1,1,1),lwd=c(2,2),bty="n")
+
+plot(Time,rawHist,type="l",
+     xlab="Time (s)",ylab="Freq. (Hz)",
+     main=expression(lambda == 1000 * lambda[0]))
+mtext("C",side=3,adj=0,line=2)
+abline(h=0)
+lines(Time,exp(predict(gcurrent,T2))/nbT/binSize,col=2,lwd=2)
+legend(0,100,
+       c("\"raw\" data",
+         "fit"),
+       col=c(1,2),lty=c(1,1,1),lwd=c(2,2),bty="n")
+
+plot(Time,rawHist,type="n",
+     xlab="Time (s)",ylab="",
+     main=expression(paste(lambda," comparison"))
+     )
+mtext("D",side=3,adj=0,line=2)
+abline(h=0)
+lines(Time,exp(predict(hcurrent,T2))/nbT/binSize,col=1,lwd=2)
+lines(Time,exp(predict(gcurrent,T2))/nbT/binSize,col=4,lwd=2)
+lines(Time,exp(predict(fcurrent,T2))/nbT/binSize,col=2,lwd=1)
+legend(0,100,
+       c(expression(lambda == lambda[0] / 1000),
+         expression(lambda == lambda[0]),
+         expression(lambda == 1000*lambda[0])),
+       col=c(1,2,4),lty=c(1,1,1),lwd=c(2,1,2),bty="n")
+@
+<<close IRLS illustration 0,echo=FALSE,results=hide>>=
+dev.off()
+@
+ 
+% \section{Reproducing Fig.~\ref{fig:simPrinciple}}
+% \label{sec:simPrincipleFig}
+<<prepare simPrinciple fig,echo=FALSE,results=hide>>=
+pdf(file="figs/simPrinciple.pdf",width=16,height=10)
+@
+<<simPrinciple, cache=true, results=hide, echo=FALSE>>=
+set.seed(20061001,"Mersenne-Twister")
+nlambda0 <- evalq(gfit,env=environment(n1CitrGSSPSTH0$lambdaFct))$nlambda
+lambda0 <- (10^nlambda0)/length(n1CitrGSSPSTH0$mids)
+s1 <- simulate(n1CitrGSSPSTH0)
+s1GSSPSTH0 <- gsspsth0(s1)
+nlambda <- evalq(gfit,env=environment(s1GSSPSTH0$lambdaFct))$nlambda
+lambda <- (10^nlambda)/length(s1GSSPSTH0$mids)
+xlim <- c(0,max(s1GSSPSTH0$mids))
+ylim <- c(0,max(s1GSSPSTH0$ciUp))
+@ 
+
+<<simPrinciple fig, echo=FALSE, results=hide>>=
+layout(matrix(c(1:3,rep(4,6)),nrow=3,byrow=TRUE))
+par(mar=c(5,7,4,4))
+plot(e070528citronellal[["neuron 1"]],main="e070528citronellal_n1",cex.main=2,cex.lab=2,ylab="")
+mtext("A",side=3,adj=0,line=2)
+plot(n1CitrGSSPSTH0$mids,
+     n1CitrGSSPSTH0$freq,
+     main="SPSTH",xlim=xlim,ylim=ylim,
+     xlab="Time (s)",
+     ylab="Freq. (Hz)",
+     type="l",
+     lwd=2,
+     bty="n",
+     xaxs="i",
+     yaxs="i",cex.main=2,cex.lab=2
+     )
+mtext("B",side=3,adj=0,line=2)
+abline(h=0,lwd=3)
+cmd1 <- parse(text=paste("text(10,80,expression(log(lambda[0]) == ",round(log(lambda0),digits=1),"),cex=2)"))
+eval(cmd1)
+plot(s1,main="Simulated Data",cex.main=2,cex.lab=2,ylab="")
+mtext("C",side=3,adj=0,line=2)
+plot(xlim,ylim,type="n",
+     xlab="Time (s)",
+     ylab="Freq. (Hz)",
+     main="Comparison between \"truth\" and estimate",
+     bty="n",
+     xaxs="i",
+     yaxs="i",cex.main=2,cex.lab=2)
+mtext("D",side=3,adj=0,line=2)
+out <- n1CitrGSSPSTH0$freq<s1GSSPSTH0$ciLow | s1GSSPSTH0$ciUp < n1CitrGSSPSTH0$freq
+nbOut <- sum(out)
+groupId <- 1
+group <- sapply(1:(length(n1CitrGSSPSTH0$mids[out])-1),
+                function(idx) {
+                  theG <- groupId
+                  if (!diff(n1CitrGSSPSTH0$mids[out])[idx] < 0.05)
+                    groupId <<- groupId+1
+                  theG
+                }
+                )
+group <- c(group,group[length(group)])
+polygon(c(s1GSSPSTH0$mids,rev(s1GSSPSTH0$mids)),
+        c(s1GSSPSTH0$ciLow,rev(s1GSSPSTH0$ciUp)),
+        col="grey50",border=NA)
+lines(n1CitrGSSPSTH0$mids,n1CitrGSSPSTH0$freq)
+cmd2 <- parse(text=paste("text(10,80,expression(log(lambda) == ",round(log(lambda),digits=1),"),cex=2)"))
+eval(cmd2)
+text(2,80,paste(nbOut,"/",length(out),"points out"),cex=2)
+abline(h=0,lwd=3)
+invisible(sapply(1:max(group),
+                 function(groupId) {
+                   X <- s1GSSPSTH0$mids[out][group == groupId]
+                   X1 <- min(X)
+                   X2 <- max(X)
+                   segments(X1,0,X2,0,lwd=4,col="white")
+                 }
+                 )
+          )
+@
+<<close simPrinciple fig,echo=FALSE,results=hide>>=
+dev.off()
+@
+
+<<load summaryMC data, echo=FALSE, results=hide, cache=true>>=
+load(paste(vigdir,"/summaryMC.rda",sep=""))
+@
+<<define function to generate plots from the loaded data, echo=FALSE, results=hide, cache=true>>=
+allSPSTHs <- function(object) {
+
+  yMax <- max(sapply(object,function(l) max(l$ciUp)))
+  xMax <- max(sapply(object,function(l) max(l$mids)))
+  xlim <- c(0,xMax)
+  ylim <- c(0,yMax)
+
+  opar <- par(mar=c(2,1,2,1))
+  on.exit(par(opar))
+  layout(matrix(1:18,nrow=3))
+  invisible(sapply(1:length(object),
+                   function(idx) {
+                     l <- object[[idx]]
+                     plot(xlim,ylim,type="n",xaxt="n",yaxt="n",bty="n",
+                          xlab="",ylab="",main=names(object)[idx])
+                     segments(-0.5,10,-0.5,20,lwd=2)
+                     segments(0,0,15,0)
+                     polygon(c(l$mids,rev(l$mids)),
+                             c(l$ciLow,rev(l$ciUp)),
+                             col="grey50",border=NA)
+                   }
+                   )
+            )
+}
+
+
+plot.BiasFig <- function(x,y,withLabels=TRUE,...) {
+
+  ncol <- length(x)
+  layout(matrix(1:(3*ncol),nrow=3))
+
+  ylim1 <- c(min(sapply(x,function(l) min(l$eta[-c(1,length(l$eta))]))),
+             max(sapply(x,function(l) max(l$eta[-c(1,length(l$eta))]))))
+  ylim2 <- c(min(sapply(x,function(l) min(l$Bias[-c(1,length(l$eta))]))),
+             max(sapply(x,function(l) max(l$Bias[-c(1,length(l$eta))]))))
+  ylim3 <- c(min(sapply(x,function(l) 0.1*(floor(10*min(l$ECP[-c(1,length(l$ECP))]))))),
+             1)
+  
+  invisible(lapply(1:ncol,
+                   function(lIdx) {
+
+                     eta <- x[[lIdx]]$eta
+                     Bias <- x[[lIdx]]$Bias
+                     eta.hat <- x[[lIdx]]$eta.hat
+                     Out <- x[[lIdx]]$Out
+                     ECP <- x[[lIdx]]$ECP
+                     mcName <- names(x)[lIdx]
+                     nbRep <- x[[lIdx]]$nbRep
+
+                     xlim <- c(0,length(eta))
+                     mcName2 <- paste("expression(paste(\"",mcName,": \"",",eta))",sep="")
+                     mainCMD <- parse(text=mcName2)
+                     plot(eta,type="l",
+                          xlab="bin #",
+                          ylab=expression(eta),
+                          xaxs="i",yaxs="i",
+                          main=eval(mainCMD),
+                          xlim=xlim,
+                          ylim=ylim1,
+                          lwd=ifelse(ncol==1,2,1),
+                          ...)
+                     if (withLabels) {
+                       if (ncol==1) mtext("A",side=3,adj=0,line=2)
+                       else mtext(paste(LETTERS[lIdx],1,sep=""),side=3,adj=0,line=2)
+                     }
+                     plot(Bias,type="l",
+                          xlab="bin #",
+                          ylab=expression(paste(eta," - E(",hat(eta),")")),
+                          xaxs="i",yaxs="i",xlim=xlim,
+                          ylim=ylim2,
+                          main=ifelse(ncol==1,
+                            paste("Estimated Pointwise Bias Over",nbRep,"MC Trials"),
+                            "Est. Pointwise Bias"),
+                          lwd=ifelse(ncol==1,2,1),
+                          ...)
+                     if (withLabels) {
+                       if (ncol==1) mtext("B",side=3,adj=0,line=2)
+                       else mtext(paste(LETTERS[lIdx],2,sep=""),side=3,adj=0,line=2)
+                     }
+                     abline(h=0)
+                     plot(ECP,xlab="bin #",ylab="Coverage",
+                          type="l",xaxs="i",yaxs="i",
+                          xlim=xlim,
+                          main=ifelse(ncol==1,
+                            paste("Estimated Pointwise Coverage Prob. for 95 % Confidence Intervals Over",
+                                  nbRep,
+                                  "MC Trials"),
+                            "Est. Pointwise Cov. Prob."),
+                          ylim=ylim3,
+                          lwd=ifelse(ncol==1,2,1),
+                          ...
+                          )
+                     if (withLabels) {
+                       if (ncol==1) mtext("C",side=3,adj=0,line=2)
+                       else mtext(paste(LETTERS[lIdx],3,sep=""),side=3,adj=0,line=2)
+                     }
+                     abline(h=0.95,lty=2)
+                   }
+                   )
+            )
+  
+}
+
+plot.mcSummary <- function(x,y,outline=TRUE,...) {
+
+  nbOut <- unlist(lapply(x, function(l) l$nbOut/length(l$eta)))
+  lambda <- unlist(lapply(x, function(l) (10^l$lambda)/length(l$eta)))
+  ref <- factor(unlist(lapply(1:length(x),
+                              function(idx) rep(idx,x[[idx]]$nbRep)
+                            )
+                     ),
+                labels=names(x)
+                )
+  myDF <- data.frame(ref,nbOut,lambda)
+
+  layout(matrix(1:2,nrow=2))
+  opar <- par(mar=c(1,4,3,2))
+  on.exit(par(opar))
+  boxplot(log(lambda) ~ ref,data=myDF,
+          outline=outline,
+          ylab=expression(log(lambda)),
+          main="Smoothing Parameter Estimation",
+          xaxt="n")
+  mtext("A",side=3,adj=0,line=1)
+  invisible(sapply(1:length(x),
+                   function(idx) {
+                     rl <- 10^(x[[idx]]$refLambda)/length(x[[idx]]$eta)
+                     points(idx,log(rl),pch=19,col="grey50")
+                   }
+                   )
+            )
+  par(las=2,mar=c(9,4,3,2))
+  boxplot(1-nbOut ~ ref,data=myDF,ylab="Coverage",
+          outline=outline,
+          main="Estimated Average Coverage Prob.")
+  mtext("B",side=3,las=1,line=1,adj=0)
+  abline(h=0.95,col="grey50",lty=2,lwd=2)
+  invisible(par(opar))
+  
+}
+@
+
+<<prepare allSPSTHs fig,echo=FALSE,results=hide>>=
+pdf(file="figs/allSPSTHs.pdf",width=12,height=12)
+@
+<<allSPSTHs fig,echo=FALSE,results=hide>>=
+allSPSTHs(summaryMC)
+@
+<<close allSPSTHs fig,echo=FALSE,results=hide>>=
+dev.off()
+@
+
+<<prepare LCI fig,echo=FALSE,results=hide>>=
+pdf(file="figs/LCI.pdf",width=10,height=10)
+@
+<<LCI fig,echo=FALSE,results=hide>>=
+plot.mcSummary(summaryMC)
+@
+<<close LCI fig,echo=FALSE,results=hide>>=
+dev.off()
+@
+
+<<prepare BCP fig,echo=FALSE,results=hide>>=
+pdf(file="figs/BCP.pdf",width=10,height=10)
+@
+<<BCP fig,echo=FALSE,results=hide>>=
+badOnes <- sort.int(sapply(summaryMC, function(l) min(l$ECP[-c(1,length(l$ECP))])),ind=TRUE)$ix[1:3]
+plot.BiasFig(summaryMC[badOnes])
+@
+<<close BCP fig,echo=FALSE,results=hide>>=
+dev.off()
+@
+
+
+\pagebreak
+\bibliographystyle{plain}
+\bibliography{PouzatChaffiol_STARdraft}
+
+\pagebreak
+
+%\listoffigures
+
+%\printindex
+
+
+<<reset options, echo=FALSE, results=hide>>=
+options(width=80)
+@ 
+\end{document}
+

@@ -1,0 +1,10 @@
+## Lines starting with '## ' will be removed from the log message.
+## File(s) to commit recursively:
+## R/jpsth.R
+New functions providing an interface with gssanova and gssanova0 added
+for smooth cross-correlograms and smooth psths. Changes to
+reportHTML.spikeTrain and reportHTML.repeatedTrain made
+accordingly. Corresponding .Rd files added and modified.
+Functions to manipulate gss objects added with doc.
+Bug suppressed in Ogata1988 demo.
+DESCRIPTION and NAMESPACE updated
