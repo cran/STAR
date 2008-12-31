@@ -1,0 +1,33 @@
+Wed Dec 31 14:00:00 CET, Christophe Pouzat <christophe.pouzat@gmail.com>
+	* DESCRIPTION: Version 0.2-2
+	* inst/doc: Moved second vignette (OnCPtests.Rnw) to STAR website
+	and removed it from the package.
+	
+	
+Tue Dec 23 21:00:00 CET, Christophe Pouzat <christophe.pouzat@gmail.com>
+
+	* DESCRIPTION: Version 0.2-1
+	* R: Added %tt% and isi codes in file gssmisc.R.
+	* man: corresponding documentation
+	* NAMESPACE: Added .mkDiscreteTrain 
+	* inst/doc: Updated PouzatChaffiol_STARdraft.Rnw and 
+	PouzatChaffiol_STARdraft.bib
+
+
+Thu Oct 27 17:00:00 CET, Christophe Pouzat <christophe.pouzat@gmail.com>
+
+	* DESCRIPTION: Version 0.2-0
+	* R: Added code for Wiener process first passage time through an
+	arbitrary boundary calculation. Change one hist call in function
+	psth in order to eliminate a bug in demo cockroachDataSet1. Added
+	code dealing with the new classes: CountingProcessSamplePath and
+	CountingProcessSamplePath.summary. An error in the sampling
+	variance of the variance of a normal distribution in function
+	varianceTime has been found and corrected by Chong Gu.   
+	* man: Corresponding documentation.
+	* src: New folder with C source code (crossTight.c) for the Wiener
+	process first passage time through the "tight" boundary: a +
+	b*sqrt(t)
+	* inst/doc: Typos corrected and some new figures in
+	PouzatChaffiol_STARdraft.Rnw, one reference added to
+	PouzatChaffiol_STARdraft.bib. Added OnCPtests.Rnw.

@@ -1,8 +1,7 @@
 mkGLMdf <- function(obj,
                     delta,
                     lwr,
-                    upr,
-                    discrete=TRUE
+                    upr
                     ) {
 
   ## check if obj is a list
@@ -96,53 +95,29 @@ mkGLMdf <- function(obj,
     
     cBRTl <- lapply(1:nbNeurons,
                     function(nIdx) {
-                      if (discrete) {
+                      preMatrix <- matrix(0,
+                                          nrow=theGrid.l,
+                                          ncol=nbNeurons)
 
-                        preMatrix <- matrix(as.integer(0),
-                                            nrow=theGrid.l,
-                                            ncol=nbNeurons)
-
-                        for (pIdx in 1:nbNeurons) {
-                          evtIdx <- idxV[dTM[,pIdx]>0]
-                          if (theGrid.l != evtIdx[length(evtIdx)]){
-                            extra <- TRUE
-                            evtIdx <- c(evtIdx,theGrid.l)
-                          } else {
-                            extra <- FALSE
-                          }
-                          bPts <- diff(evtIdx)
-                          ttl <- c(rep(NA,evtIdx[1]),
-                                   unlist(lapply(bPts,function(b) 1:b))
-                                   )
-                          if (!identical(nIdx,pIdx)) {
-                            if (extra) ttl[evtIdx[-length(evtIdx)]] <- 0
-                            else ttl[evtIdx] <- 0
-                          }
-                          preMatrix[,pIdx] <- ttl
-                        } ## End of for loop on pIdx
-                        
-                      } else {
-                        downTime <- as.numeric(theGrid)
-                        downTime[idxV[dTM[,nIdx]>0]] <- getTime(nIdx,trialIdx)
-                        preMatrix <- matrix(0,
-                                            nrow=theGrid.l,
-                                            ncol=nbNeurons)
-
-                        for (pIdx in 1:nbNeurons) {
-                          upTime <- getTime(pIdx,trialIdx)
-                          ttl <- sapply(downTime,
-                                        function(t) {
-                                          good <- t > upTime
-                                          sgood <- sum(good)
-                                          if (sgood == 0) return(NA)
-                                          else t - upTime[good][sgood]
-                                        }
-                                        )
-                          preMatrix[,pIdx] <- ttl
-                        } ## End of for loop on pIdx
-                        
-                      } ## End of conditional on discrete
-
+                      for (pIdx in 1:nbNeurons) {
+                        evtIdx <- idxV[dTM[,pIdx]>0]
+                        if (theGrid.l != evtIdx[length(evtIdx)]){
+                          extra <- TRUE
+                          evtIdx <- c(evtIdx,theGrid.l)
+                        } else {
+                          extra <- FALSE
+                        }
+                        bPts <- diff(evtIdx)
+                        ttl <- c(rep(NA,evtIdx[1]),
+                                 unlist(lapply(bPts,function(b) 1:b))
+                                 )
+                        if (!identical(nIdx,pIdx)) {
+                          if (extra) ttl[evtIdx[-length(evtIdx)]] <- 0
+                          else ttl[evtIdx] <- 0
+                        }
+                        preMatrix[,pIdx] <- ttl*delta
+                      } ## End of for loop on pIdx
+                      
                       preMatrix
                       
                     } ## End of function of nIdx
@@ -164,7 +139,7 @@ mkGLMdf <- function(obj,
 
     for (idx in 1:length(preNames)) 
       result[[preNames[idx]]] <- unlist(lapply(cBRTl,function(m) m[,idx]))
-    
+
     result
   }
   ## End of firstList definition
@@ -180,6 +155,8 @@ mkGLMdf <- function(obj,
     result <- as.data.frame(result)
   } ## End of conditional on isST
 
+  bad <- apply(t(apply(result,1,is.na)),1,any)
+  result <- result[!bad,]
   attr(result,"upr") <- upr
   attr(result,"lwr") <- lwr
   attr(result,"delta") <- delta

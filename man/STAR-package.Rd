@@ -12,12 +12,12 @@ Functions to analyze neuronal spike trains
 \tabular{ll}{
 Package: \tab STAR\cr
 Type: \tab Package\cr
-Version: \tab 0.1-5\cr
-Date: \tab 2007-11-07\cr
-Depends: \tab survival, mgcv, R2HTML, sound\cr
-Suggests: \tab gam, lattice, ggplot2, HiddenMarkov\cr
+Version: \tab 0.2-1\cr
+Date: \tab 2008-11-02\cr
+Depends: \tab gss, survival, mgcv, R2HTML\cr
+Suggests: \tab lattice, HiddenMarkov, snow, rstream\cr
 License: \tab GPL version 2 or newer\cr
-URL: \tab http://www.biomedicale.univ-paris5.fr/physcerv/C\_Pouzat/STAR.html\cr
+URL: \tab http://sites.google.com/site/spiketrainanalysiswithr\cr
 }
 }
 \author{

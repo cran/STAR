@@ -464,22 +464,23 @@ bestLambda <- sapply(ShallowShocks$Date,
                      }
                      )
 
-class(bestLambda) <- c("transformedTrain","spikeTrain")
-plot(bestLambda,1,ask=FALSE)
-rug(bestLambda)
+bestLambda <- mkCPSP(bestLambda)
+bestLambda.summary <- summary(bestLambda)
+plot(bestLambda.summary,which=1)
+
 
 ## Replicate Fig. 10
-plot(bestLambda,2,ask=FALSE)
+plot(bestLambda.summary,which=2)
 
 ## Replicate Fig. 11
-plot(bestLambda,4,ask=FALSE)
+plot(bestLambda.summary,which=4)
 
 ## Replicate Fig. 12
-plot(bestLambda,3,ask=FALSE)
+plot(bestLambda.summary,which=3)
 
 ## Replicate Fig. 13
-plot(bestLambda,5,ask=FALSE)
+plot(bestLambda.summary,which=5)
 ## the same but better (with more points)
-plot(varianceTime(bestLambda,,seq(2.5,70,2.5)),style="Ogata")
+plot(varianceTime(bestLambda$ppspFct(),,seq(2.5,70,2.5)),style="Ogata")
 
 par(originalpar)

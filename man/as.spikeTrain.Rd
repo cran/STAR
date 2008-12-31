@@ -16,7 +16,7 @@ is.spikeTrain(x)
 }
 \arguments{
   \item{x}{An object to be coerced to or to test against a
-  \code{spikeTrain} object or a \code{spikeTrain} obect for \code{[}.}
+  \code{spikeTrain} object or a \code{spikeTrain} object for \code{[}.}
   \item{i}{indices specifying elements to extract. \emph{No gaps are allowed}.}
 }
 \details{

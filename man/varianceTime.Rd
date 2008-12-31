@@ -63,7 +63,11 @@ is.varianceTime(obj)
   Analysis for Point Processes. \emph{Journal of the American
     Statistical Association} \bold{83}: 9-27.
 }
-\author{Christophe Pouzat  \email{christophe.pouzat@gmail.com} }
+\author{
+  Christophe Pouzat  \email{christophe.pouzat@gmail.com} and Chong Gu
+  \email{chong@stat.purdue.edu} for a correction on the sampling
+  variance of the variance of a normal distribution.
+}
 \seealso{
   \code{\link{acf.spikeTrain}},
   \code{\link{renewalTestPlot}}

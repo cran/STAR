@@ -6,14 +6,14 @@
 \usepackage{newcent}
 \usepackage[T1]{fontenc}
 \usepackage{url}
-\usepackage[colorlinks=TRUE,pagebackref=TRUE]{hyperref}
+\usepackage{natbib}
 \usepackage{geometry}
-\usepackage{cite}
 \usepackage{graphicx}
 \usepackage{amsmath}
 \usepackage{amssymb}
 \usepackage{amsbsy}
 \usepackage{makeidx}
+\usepackage[colorlinks=TRUE,pagebackref=FALSE]{hyperref}
 
 \geometry{verbose,a4paper,tmargin=2.5cm,bmargin=2.5cm,lmargin=3cm,rmargin=3cm}
 
@@ -133,11 +133,8 @@
 \newcommand{\gamCheck}{\textsf{gam.check}\index{gam.check}\index{mgcv!gam.check}}
 
 
-%\SweaveOpts{prefix.string=figs/}
-
-
 \title{Automatic
-  Spike Train Analysis and HTML Report Generation. An implementation
+  Spike Train Analysis and Report Generation. An Implementation
   with R, R2HTML and STAR.}
 \author{
   Christophe Pouzat and Antoine Chaffiol \\
@@ -153,13 +150,13 @@
 
 \begin{document}
 
-% <<cacheSweave set up, echo=FALSE, results=hide>>=
-% setCacheDir("PCdataCachedD")
-% @
+%<<cacheSweave set up, echo=FALSE, results=hide>>=
+%setCacheDir("PCdataCachedD")
+%@
 
 <<start up things, echo=FALSE, results=hide>>=
 set.seed(20061001,kind="Mersenne-Twister")
-options(width=60)
+options(width=60,SweaveSyntax="SweaveSyntaxNoweb")
 dir.create("report")
 dir.create("figs")              
 @
@@ -201,10 +198,8 @@ efficient subsequent use. The analysis of our data recorded from the
 first olfactory relay of an insect, the cockroach
 \emph{Periplaneta americana}, has led us to settle on such 
 ``routine'' spike train analysis procedures: one applied to spontaneous
-activity recordings (typically epochs of 60s in the
-absence of any stimulation), the other used with recordings
-where a stimulation  was repetitively applied (typically
-15 to 20 epochs of 10 to 15 s with an odor puff). We have
+activity recordings, the other used with recordings
+where an olfactory stimulation  was repetitively applied. We have
 developed a group of functions implementing a mixture of common and
 original procedures and producing graphical or numerical outputs. These
 functions can be run in batch mode and do moreover produce an organized report
@@ -216,7 +211,7 @@ analysis procedures are of general interest but they can also be very
 easily modified to suit user specific needs.    
 \end{abstract}
 
-%\tableofcontents
+\tableofcontents
 
 \section{Introduction}
 \label{sec:introduction}
@@ -229,16 +224,16 @@ time first sorting the spikes, then doing again and again the same
 basic analysis on the different spike trains isolated from the raw
 data. Although this ``basic'' analysis is likely to change from person
 to person, it will usually include, for ``spontaneous activity data'',
-a ``laundry list'' looking like:
+a list like:
 \begin{itemize}
 \item A display of the spike train per se in a
-\RPlot~ or a \CPlot~\cite{CoxLewis_1966,TurnbullEtAl_2005}.
+\RPlot~ or a \CPlot~\citep{CoxLewis_1966,TurnbullEtAl_2005}.
 \item A plot or a numeric quantity testing the stationarity of the train.
-\item Perhaps some standards distributions are fitted to the
+\item Perhaps some standard distributions are fitted to the
   \ISI \emph{s}~(\isi) and a plot checking the quality of
   the fits is produced.
 \item If several neurons are recorded simultaneously then
-  \CCH \emph{s}~\cite{PerkelEtAl_1967b,BrillingerEtAl_1976} are likely to
+  \CCH \emph{s}~\citep{PerkelEtAl_1967b,BrillingerEtAl_1976} are likely to
   be generated.
 \end{itemize}
 
@@ -255,13 +250,13 @@ or to stop. In this scenario two issues arise:
 \end{itemize}
 We insist here on the notion of \emph{preliminary}~analysis as opposed
 to the ``refined'' one which ends up being presented and illustrated
-in papers. There is still a long way between the preliminary and final
+in publications. There is still a long way between the preliminary and final
 analysis requiring a major input from the data analyst. The idea is to
 save time and stay alert for the really important part of the analysis. 
 
 In any case, even if the data analysis software used
 includes routines or functions to implement the individual components
-of our ``laundry list'', making the analysis automatic, \ie, suitable for
+of our first list, making the analysis automatic, \ie, suitable for
 processing in batch mode, can be problematic. Difficulties arise from two
 sources:
 \begin{itemize}
@@ -275,21 +270,21 @@ sources:
 We solved these two problems by: 
 \begin{itemize}
 \item Using model reparametrization in the fitting
-  routines~\cite{BatesWatts_1988} making the optimization step more
+  routines~\citep{BatesWatts_1988} making the optimization step more
   robust with respect to ``bad'' specifications of initial guesses.
-\item Using ``statistical smoothing'' techniques based on \Smoothy~\cite{Wahba_1990,Gu_2002,Gu_2008} for the plots.
+\item Using ``statistical smoothing'' techniques based on \Smoothy~\citep{Wahba_1990,Gu_2002,Gu_2008} for the plots.
 \end{itemize}
 Once these two problems have received a satisfying answers the question
 of a suitable software environment into which these solutions will be
 implemented has to be answered. We chose
-\R\footnote{\url{http://www.r-project.org}}~\cite{R-2.7.2}
+\R\footnote{\url{http://www.r-project.org}}~\citep{R-2.7.2}
 because, among many other reasons:
 \begin{itemize}
 \item It is open source and free.
 \item It runs on any computer likely to be found in a physiology
-  laboratory, PC running Linux or Windows, Mac.
+  laboratory, PC running Linux, Windows or Mac.
 \item It is a powerful and elegant programming language based on
-  \texttt{Scheme}~\cite{IhakaGentleman_1996,AbelsonEtAl_1996}. 
+  \texttt{Scheme}~\citep{IhakaGentleman_1996,AbelsonEtAl_1996}. 
 \item It uses state of the art numerical libraries (for optimization,
   random number generation, clustering, etc).
 \item It can be used in batch mode.
@@ -297,15 +292,15 @@ because, among many other reasons:
   graphics\footnote{See for instance:
     \url{http://www.stat.auckland.ac.nz/~ihaka/787/} and \url{http://addictedtor.free.fr/graphiques/index.php}}.
 \item It is specifically designed to implement a clear and thorough
-  type of data analysis~\cite{Chambers_1999}.
+  type of data analysis~\citep{Chambers_1999}.
 \item It is very easily extended by its users and, so to speak,
-  encourages its users to become its programmers~\cite{Chambers_2000,Chambers_2008}.
+  encourages its users to become its programmers~\citep{Chambers_2000,Chambers_2008}.
 \end{itemize}
 
 Adopting \R~did moreover provide a pretty straightforward solution to
 our ``analysis results organization and display'' problem. Modern
 computers are all equipped with a web browser and everyone knows how to
-use such a software. HTML files, the type of files that a web browser
+use such software. HTML files, the type of files that a web browser
 displays, can, as everyone knows, contain text, figures,
 mathematical equations and more. It seems therefore reasonable to use
 the HTML format to organize our analysis results. If one agrees on
@@ -313,7 +308,7 @@ that, the only problem left is the generation of this analysis specific
 HTML file. Well, the good news here is that the problem is solved by
 one of the \R~user contributed add-on packages:
 \RHTML\footnote{\url{http://www.stat.ucl.ac.be/ISpersonnel/lecoutre/R2HTML/}}~
-\cite{Lecoutre_2003}, which turns out to be very simple to use.
+\citep{Lecoutre_2003}, which turns out to be very simple to use.
 
 <<Nb Fct in STAR, echo=FALSE, results=hide>>=
 nbSTARfct <- length(ls("package:STAR"))-dim(data(package="STAR")$results)[1]
@@ -322,7 +317,7 @@ nbSTARfct <- length(ls("package:STAR"))-dim(data(package="STAR")$results)[1]
 Equipped with these tools: \R, statistical smoothing plus model
 reparametrization and \RHTML, we have developed a new \R~add-on
 package:
-\STAR\footnote{\url{http://www.biomedicale.univ-paris5.fr/physcerv/C_Pouzat/STAR.html}}~
+\STAR\footnote{\url{http://sites.google.com/site/spiketrainanalysiswithr/}}~
 (\textsf{Spike Train Analysis with R}) which like \R~itself is open
 source and free. The package contains \Sexpr{nbSTARfct} 
 functions, most of which are seldom \emph{directly}~used. 
@@ -348,8 +343,8 @@ experimental animals. They were reared in an incubator with free
 access to food and water, at $25\,^{\circ}\mathrm{C}$. They were
 cold-anesthetized prior to the experiment. Wings, legs and some mouth
 parts were removed. Each insect was restrained in an acrylic glass
-holder, with its head fixed with dental wax (as shown on Fig. 2
-of~\cite{EscolaEtAl_2008}). The lower part of both
+holder, with its head fixed with dental
+wax~\citep[see][Fig. 2]{EscolaEtAl_2008}. The lower part of both 
 Antennae was protected
 with plastic tubes (to avoid contact with the physiological
 solution). A window of head cuticle was opened,
@@ -369,15 +364,15 @@ electrodes (Neuronexus Technologies). The probe was gently inserted
 into the antennal lobe until activity appeared at least on 4 recording
 sites. Signals were sampled at 12.8 kHz, band-pass filtered between
 0.3 and 5 kHz and amplified using an IDAC2000 amplifier and its
-Autospike 2000 acquisition program (SYNTECH).
+Autospike 2000 acquisition program (SYNTECH\footnote{\url{http://www.syntech.nl}.}).
 
 \subsubsection{Olfactory stimulations}
 \label{sec:stimulations}
 
 A main moistened and filtered airflow was placed 3 cm away from the
 antenna, and a secondary stream controlled by a solenoid valve was
-used to deliver odor puffs. A piece of filter paper (3 mm x 20 mm) was
-soaked by  5 $\mu$l of pure aromatic compounds and placed in the
+used to deliver odor puffs. A piece of filter paper was
+soaked in different aromatic compounds and placed in the
 secondary stream. 0.5 s odor puffs were used.
 
 \subsubsection{Data sets}
@@ -385,7 +380,7 @@ secondary stream. 0.5 s odor puffs were used.
 
 The examples used in this paper come from 4 experiments referred to as:
 \texttt{e060517}, \texttt{e060817}, \texttt{e060824} and
-\texttt{e070528} (the names are built with 2 digits for the year, two
+\texttt{e070528} (the names are built with 2 digits for the year, 2
 for the month and 2 for the day). The number of neurons reliably
 isolated in each of these experiments were respectively: 3, 3, 2 and
 4. The spike trains used in this paper, either from spontaneous
@@ -415,7 +410,7 @@ data sets can be found in the help files of \STAR.
 \label{sec:dataAnalysis}
 
 All the data analysis described in this paper was carried out using
-\R~\cite{R-2.7.2}, some of its user add-on packages and two additional
+\R~\citep{R-2.7.2}, some of its user add-on packages and two additional
 packages developed by us,
 \SpikeOMatic\footnote{\url{http://www.biomedicale.univ-paris5.fr/physcerv/C_Pouzat/newSOM/newSOMtutorial/newSOMtutorial.html}.}~
 and
@@ -433,13 +428,14 @@ install \R~ and \STAR.
 \label{sec:spikeSorting}
 
 Spike sorting was carried out as described in: ``The
-New SpikeOMatic Tutorial''~\cite{Pouzat_2006}. 
+New SpikeOMatic Tutorial''~\citep{Pouzat_2006}. 
 
 \subsection{Spontaneous activity analysis}
 \label{sec:spontanouesActivityAnalysis}
 
 We start with the analysis of ``spontaneous regime'' data. By that we
-mean data recorded in the absence of stimulation. 
+mean data recorded in the absence of stimulation (typically epochs of
+60 s). 
 
 \subsubsection{Spike train plot}
 \label{sec:spikeTrainPlot}
@@ -448,9 +444,9 @@ The most common way to display a spike train is probably the \RPlot,
 which is fundamentally a one dimensional graph where the occurrence
 time of the spike gives the horizontal coordinate and where a symbol
 like a little vertical bar, or a star (``*'') is used to represent
-each spike. As abundantly illustrated by~\cite[Turnbull et al,
-2005]{TurnbullEtAl_2005} and, in fact, proposed much earlier in the
-first figure of the book of~\cite[Cox and Lewis, 1966]{CoxLewis_1966},
+each spike. As abundantly illustrated by~\citet{TurnbullEtAl_2005}
+and, in fact, proposed much earlier in the 
+ first figure of the book of~\citet{CoxLewis_1966},
 it is much more informative to plot the cumulative number of events as
 a function of their occurrence time as shown on
 Fig.~\ref{fig:e070528spontN4_ST}, where a 
@@ -477,12 +473,12 @@ of the discharge will show up as a curvature of the graph, which will
 be concave for a decelerating discharge and convex for an accelerating
 one.   
 
-We refer to the kind of plot shown on Fig.~\ref{fig:e070528spontN4_ST}
-as a \CPlot~ because that what such plots are called in the
-(statistical) literature dealing with series of (identical) events~\cite{Brillinger_1988b,Johnson_1996}. A
+Following the statistical literature
+terminology~\citep{Brillinger_1988b,Johnson_1996} we refer to the kind
+of plot shown on Fig.~\ref{fig:e070528spontN4_ST} 
+as a \CPlot. A
 \Cproc~ is a right continuous step function which undergoes a
-unit jump every time an event occurs. More formally~\cite[Brillinger,
-1988, p190, Eq. 2.1]{Brillinger_1988b}:
+unit jump every time an event occurs. More formally~\citep[Eq. 2.1]{Brillinger_1988b}:
 For points $\{ t_j \}$ randomly scattered along a line, the counting
 process  $N(t)$ gives the number of points observed in the interval $(0,t]$.
 \begin{equation}
@@ -521,16 +517,16 @@ $(t_1,t_1+\tau_1]$ and $(t_2,t_2+\tau_2]$, defines a \HPproc.
 
 The \HPproc~ is not very useful to analyze ``directly'' real spike trains, at least
 not ours, but its extension to time dependent discharges (with the
-\IPproc) is extremely useful to describe mean responses of a single
+\IPproc) is extremely useful to describe trial-averaged responses of a single
 neuron to repeated presentations of a given stimulus.  
-% following~\cite[Brown et al., 2002]{BrownEtAl_2002}
-% and even more~\cite[Ogata, 1988]{Ogata_1988}, it is extremly useful to
+% following~\citep[Brown et al., 2002]{BrownEtAl_2002}
+% and even more~\citep[Ogata, 1988]{Ogata_1988}, it is extremly useful to
 % judge the adequacy between fitted discharge models and the data at
 % hand. 
 % To make such a use of it we are going to need few additional
 % properties of the \HPproc~that we state next for completeness.
 
-% It can be shown~\cite[Pelat, 1996, Chap. 9]{Pelat_1996} that the above
+% It can be shown~\citep[Pelat, 1996, Chap. 9]{Pelat_1996} that the above
 % two conditions (Poisson distribution of the counts and independence)
 % are \emph{equivalent}~to the following two requirements:
 % \begin{itemize}
@@ -554,7 +550,7 @@ neuron to repeated presentations of a given stimulus.
 %   \end{equation}
 % \end{itemize}
 
-% The last property we are going to use is~\cite[Cox and Lewis, 1966,
+% The last property we are going to use is~\citep[Cox and Lewis, 1966,
 % Chap. 2]{CoxLewis_1966}: If a \HPproc~ with rate
 % $\nu=1$ is observed during a time $T$ and gives rise to $K$
 % events, then the cumulative distribution function of the event times,
@@ -627,7 +623,7 @@ function of the lag and show the 95\% confidence region of the
 $\chi^2$ in the background. 
 
 We also plot the \isi~ empirical autocorrelation function,
-what ~\cite[Perkel et al, 1967]{PerkelEtAl_1967} call the \emph{serial
+what ~\citet{PerkelEtAl_1967} call the \emph{serial
 correlation coefficients}~ function\footnote{Defined in their Eq. 7
 and 8, p 400}, and test it against the null hypothesis of no
 correlation. 
@@ -654,7 +650,7 @@ describes how to do that.
 In addition to the renewal test plot we have included in our automatic
 spike train analysis procedures a systematic fit of the empirical \isi~
 distribution with 6 common bivariate duration
-distributions~\cite{Lindsey_2004} whose \PDF s (\pdf s) are:
+distributions~\citep{Lindsey_2004} whose \PDF s (\pdf s) are:
 \begin{itemize}
 \item log normal\index{distribution!log normal}\index{R!dlnorm}:
   \begin{equation}
@@ -700,33 +696,60 @@ distributions~\cite{Lindsey_2004} whose \PDF s (\pdf s) are:
 \end{itemize}
 The names we have used for these \pdf s like, \dlnorm, are the names
 under which these functions can be called in \R. Parameters estimates for these distributions are obtained by the \ML~
-method~\cite{Kalbfleisch_1985}. The ones of the lognormal, inverse
+method~\citep{Kalbfleisch_1985}. The ones of the lognormal, inverse
 Gaussian and refractory exponential distributions are available in
-closed form~\cite{Lindsey_2004}. The ones of the gamma, Weibull and
+closed form~\citep{Lindsey_2004}. The ones of the gamma, Weibull and
 log logistic distributions are obtained by numerical optimization
 using function \optim~ for the Weibull and the log logistic distributions
 and using the profile likelihood method for the gamma
-distribution~\cite[Monahan, 2001, pp 210-216]{Monahan_2001}. Initial
-guesses are obtained by the method of moments. In addition
+distribution~\citep[pp 210-216]{Monahan_2001}. Initial
+guesses are obtained by the method of moments~\citep{CasellaBerger_2002}. In addition
 reparametrization is used systematically for parameters which are
-constrained to be positive\cite{BatesWatts_1988,Monahan_2001}, like the
+constrained to be positive~\citep{BatesWatts_1988,Monahan_2001}, like the
 two parameters of the gamma distribution. For those the \LLF~ is
 written in term of the log parameters. See the examples of \gammaMLE,
 \weibullMLE~ and \llogisMLE~ for details.
 
 Once some or all of these distributions have been automatically fitted
 the capacities of the models to fit the data are compared with the
-\AIC\footnote{Strictly speaking, the \AIC~being designed to compare models with different number of parameters is not required here, a direct likelihood comparison would lead to the same result. We have included it in \STAR~ since distributions with more than 2 parameters will be implemented in a near future.}~\cite{BurnhamAnderson_2002,Lindsey_2004}. The \AIC~ selects the
+\AIC\footnote{Strictly speaking, the \AIC~being designed to compare models with different number of parameters is not required here, a direct likelihood comparison would lead to the same result. We have included it in \STAR~ since distributions with more than 2 parameters will be implemented in a near future.}~\citep{BurnhamAnderson_2002,Lindsey_2004}. The \AIC~ selects the
 best model among a set of models but does not provide any clue
 regarding how well the best model fits the data. A way to do that is
-build a \TQQplot s (Q-Q plots)~\cite[Chambers et al,
-1983, Chap. 6]{ChambersEtAl_1983} as shown on
+to build a \TQQplot s (Q-Q plots)~\citep[Chap. 6]{ChambersEtAl_1983} as shown on
 Fig.~\ref{sec:compModels}. On these plots, a perfect fit would fall on
 the diagonal which is drawn in red. 95 and 99\% pointwise confidence
 intervals are also drawn\footnote{To be honest we have to say
   that Fig.~\ref{fig:e070528spontN1_CM} is one 
   of our rare examples where one of 6 duration distribution (the inverse
   Gaussian) is able to fit our data.}.  
+
+In order to get insight into the two plots
+(Fig.~\ref{fig:e070528spontN4_RT} and
+Fig.~\ref{fig:e070528spontN1_CM}) we have just presented, the reader
+can first consider what would these plots look like with a genuine
+homogeneous Poisson process. Clearly such a process is renewal,
+therefore it should give results within the confidence regions of the two graphs at the bottom of
+Fig.~\ref{fig:e070528spontN4_RT}. Since the
+interspike intervals of a homogeneous Poisson process have an
+exponential distribution, our refractory exponential distribution
+model (Eq.~\ref{eq:drexp}) should provide a good fit with a very small
+(nearly null) value of the parameter $i_{min}$. The ``Q-Q plot test''
+at the bottom right of Fig.~\ref{fig:e070528spontN1_CM} should
+therefore also be passed. Next the reader can see that passing one of
+the Q-Q plot tests of Fig.~\ref{fig:e070528spontN1_CM} is not enough
+to establish that a train is renewal as follows: Take one of the six
+distributions, say the log normal (Eq.~\ref{eq:dlnorm}) one, and choose
+values for its two parameters. Draw independently 500 interspike
+intervals from this distribution. \emph{Sort}~the intervals from the
+smallest to the largest. Built a train by summing all the
+intervals. The result will pass the log normal Q-Q plot test ``by
+construction'', but it will fail to pass the renewal tests of
+Fig.~\ref{fig:e070528spontN4_RT} since the resulting train will have a
+strong built-in trend. This toy example illustrate the need to use
+test implying an ordering of the data (like the Q-Q plot test) with
+caution when the data have been serially sampled. Such tests can never
+prove or disprove an ``independently distributed'' hypothesis, that
+is, the renewal process hypothesis in the spike train context.
 
 \begin{figure}
   \centering
@@ -742,8 +765,7 @@ intervals are also drawn\footnote{To be honest we have to say
 \label{sec:cch}
 
 The \CCH s functionalities we have included in \STAR~are very close to
-what is described under this name in~\cite[Brillinger et al,
-1976]{BrillingerEtAl_1976}. The main difference is that we don't use
+what is described under this name in~\citet{BrillingerEtAl_1976}. The main difference is that we don't use
 the square root transformation to stabilize the variance since there
 is no variance to stabilize under the null hypothesis of no correlation.
 
@@ -776,13 +798,13 @@ neuron to repeated stimulations we found the more conventional
 method we use to display ``raw'' stimulus response data. In our
 automatic spike train analysis and report generation procedure we
 moreover add to it a smooth version of the classical
-\PSTH~\cite{GersteinKiang_1960}. We discuss next these \GSSPSTH s.
+\PSTH~\citep{GersteinKiang_1960}. We discuss next these \GSSPSTH s.
 
 \subsubsection{Smooth PSTH}
 \label{sec:GSSPSTH0}
 
 The case for using smooth as opposed to ``classical'' \PSTH s (\psth) has been
-clearly and convincingly made by~\cite[Kass, Ventura and Cai, 2003]{KassEtAl_2003}
+clearly and convincingly made by~\citet{KassEtAl_2003}
 and won't be repeated here. We are instead going to illustrate the principle
 while underlying the difference in methodology. A \GSSPSTH~(\gsspsth) is not only
 statistically more ``efficient'' than a \PSTH~but it also facilitates
@@ -792,11 +814,13 @@ not (or at least much less) sensitive to a bin width choice.
 The \psth~(like the \gsspsth) can be given a firm statistical basis as
 soon as one considers that the relevant feature of a single neuron
 response to a given stimulus is its ``average'' or ``mean''
-response, that is, it's \emph{average instantaneous firing rate}. For then if the successive responses of the neuron are
-uncorrelated and are ``collapsed'' or aggregated\footnote{That is, if the trial of origin of the
+response, that is, it's \emph{average instantaneous firing rate}. For
+then if the successive responses of the neuron are 
+uncorrelated and are ``collapsed'' or aggregated\footnote{That is, if
+  the trial of origin of the 
 spikes is lost (or ignored), as happens upon building a \psth.}, the
-resulting process tends to an \IPproc~\cite[Ventura et al, 2002,
-Sec. 4, p6]{VenturaEtAl_2002}. A \IPproc~is like a
+resulting process tends to an \IPproc~\citep[Sec. 4, p
+6]{VenturaEtAl_2002}. A \IPproc~is like a 
 \HPproc~(Sec.~\ref{sec:poissonProcess}) for which the rate $\nu$ is allowed to be
 time dependent. That is, Eq.~\ref{eq:poissonDistributionDef} has to be
 modified as follows:
@@ -833,10 +857,16 @@ point\footnote{But the reader should keep in mind that if the bin
   $\nu()$ over the bin should fall in the confidence interval 95 out
   of a 100 experimental replication'', \emph{is not valid anymore}.}.    
 
-The \GSSPSTH~of the present paper produces an estimate, $\hat{\nu}(t)$, of $\nu (t)$
+The \GSSPSTH~(\gsspsth)of the present paper produces an estimate,
+$\hat{\nu}(t)$, of $\nu (t)$ 
 through a compromise between two antagonistic goals: goodness of fit
-\emph{and}~smoothness (alternative, Bayesian, methods are available to built
-\gsspsth s~\cite{KassEtAl_2003,WallstromEtAl_2008}). If
+\emph{and}~smoothness. Alternative methods based on kernels or
+polynoms~\citep[see][for a book length treatment of the special case of
+Gaussian regression]{Eubank_1999} as well
+as Bayesian methods where the ``complexity'' (\ie, number of
+parameters) of the model is considered unknown but
+finite~\citep{KassEtAl_2003,WallstromEtAl_2008} are also available to built 
+\gsspsth s. If
 $\{x_i\}_{i=1}^N$ is the set of bin centers used in the preprocessing
 stage, $\delta$, the bin width, $M$, the number of stimulus presentations
 and if $\{y_i\}_{i=1}^N$ is the set of corresponding spike counts, the \emph{log likelihood}~of
@@ -862,7 +892,7 @@ transduction involving second messengers in the olfactory receptor
 neurons, spike propagation along the antenna's length, synaptic
 transmission from the receptors to the recorded antennal lobe neurons, feedback
 activity generated within the antennal
-lobe~\cite{Kaissling_1987}. Each one of these stages would smear out
+lobe~\citep{Kaissling_1987}. Each one of these stages would smear out
 in time its input even if the latter was a perfect step function. The
 smoothness hypothesis is therefore not a mere mathematically
 convenient requirement but a physiologically grounded assumption. We
@@ -888,7 +918,7 @@ becomes:
   \, \hat{\eta}(x_i) - \exp \big( \hat{\eta}(x_i) \big)\Big)
 \end{equation}
 In order to benefit from the powerful
-\Smoothy~results~\cite{Wahba_1990,Gu_2002} we are going to enforce our
+\Smoothy~results~\citep{Wahba_1990,Gu_2002} we are going to enforce our
 smoothness constraint by forcing the integral of the squared second
 derivative of $\hat{\eta}$ to be finite, that is:
 \begin{equation}
@@ -925,8 +955,9 @@ $\lambda$ when $\hat{\nu}$ is a linear function (whose graph is a
 straight line). As shown on Fig.~\ref{fig:lambdaEffect} the chosen value of $\lambda$
 will have a crucial influence on the estimated function. A small value
 will lead to a function matching arbitrarily precisely the data while
-a large value will lead to a linear function (see also
-Fig. 4.1-4.3~\cite[pp 46-47]{Wahba_1990} and Fig. 1.1~\cite[p 3]{Gu_2002}).
+a large value will lead to a linear function, as illustrated, for the
+Gaussian regression case, in~\citet[Fig. 4.1-4.3, pp
+46-47]{Wahba_1990} and~\citet[Fig. 1.1, p 3]{Gu_2002}.
 
 \begin{figure}
   \centering
@@ -936,8 +967,8 @@ Fig. 4.1-4.3~\cite[pp 46-47]{Wahba_1990} and Fig. 1.1~\cite[p 3]{Gu_2002}).
     $\lambda_0$ was obtained by the cross-validation method described
     in the sequel. Two additional were performed with
     $\frac{\lambda_0}{1000}$ (A) and with $1000 \, \lambda_0$
-    (C). On A,B and C, the ``raw data'' (classical psth built with a
-    bin width of 25 ms) appear as black and the fitted curve appears
+    (C). On A, B and C, the ``raw data'' (classical psth built with a
+    bin width of 25 ms) appears as black and the fitted curve appears
     as red. D, the 3 fits superposed. A small $\lambda$ leads clearly
     to a ``wiggly'' fit following the data closely, while a large one
     generates a fit following only the very slow variations of the discharge.}
@@ -948,15 +979,14 @@ Fig. 4.1-4.3~\cite[pp 46-47]{Wahba_1990} and Fig. 1.1~\cite[p 3]{Gu_2002}).
 \paragraph{Three key results}
 
 As mentioned before the \Smoothy~theory is, thanks to the work of
-Grace Wahba and her collaborators~\cite{Wahba_1990,Gu_2002}, extremely well developed. This is
+Grace Wahba and her collaborators~\citep{Wahba_1990,Gu_2002}, extremely well developed. This is
 the availability of a strong theoretical results together with the
 availability of software which lead us to use this methodology. We
 will state here three results which are particularly important.
 
 \subparagraph{Solution of the penalized likelihood problem}
 
-It can be shown~\cite{KimeldorfWahba_1971},~\cite[Chap. 1]{Wahba_1990},~\cite[Chap. 2 and
-5]{Gu_2002} that the function $\hat{\eta}_{\lambda}$ minimizing
+It can be shown~\citep{KimeldorfWahba_1971,Wahba_1990,Gu_2002} that the function $\hat{\eta}_{\lambda}$ minimizing
 Eq.~\ref{eq:penalizedLikelihood} for a fixed $\lambda$ exists in a \emph{finite dimensional
   space} whose basis functions can be found. That is,
 $\hat{\eta}_{\lambda}$ can be written as:
@@ -982,7 +1012,7 @@ The coefficients, $d_0$, $d_1$ and $\{ c_i\}_{i=1}^N$ have to be found
 but classical methods for generalized linear models with penalization,
 \emph{penalized iteratively re-weighted least squares}~(PIRLS),
 can be directly used for
-that~\cite[Chap. 3 and 5]{Gu_2002} as detailed in
+that~\citep[Chap. 3 and 5]{Gu_2002} as detailed in
 Sec.~\ref{sec:lambdaEffectFig} of the Appendix. The user of these
 methods should moreover be aware that at least 2 symmetric matrices
 whose approximate size are $N^2$ have to be allocated during the
@@ -1009,7 +1039,7 @@ minimizes:
   \eta_{\lambda}(x_i) \Big)
 \end{displaymath}
 which is the average symmetrize Kullback-Leibler distance over the
-sample points~\cite[p 152]{Gu_2002}. Notice that we do not assume here
+sample points~\citep[p 152]{Gu_2002}. Notice that we do not assume here
 that the ``true'' $\eta$ function satisfies
 Eq.~\ref{eq:etaSmoothConstraint}, it could for instance be
 discontinuous. 
@@ -1027,9 +1057,9 @@ updating simultaneously the coefficients $d_0$, $d_1$, $\{
 c_i\}_{i=1}^N$ \emph{and}~the smoothing parameter.
 The cross-validation scheme used to estimate $\lambda$ can be shown to
 give on average the optimal $\lambda_{0}$ in the PWLS
-setting~\cite{CravenWahba_1979,Wahba_1990,Gu_2002}. In the present
+setting~\citep{CravenWahba_1979,Wahba_1990,Gu_2002}. In the present
 setting, strong arguments together with simulations suggests that the
-same holds but no formal proof is available~\cite{Gu_1992b}. Monte-Carlo
+same holds but no formal proof is available~\citep{Gu_1992b}. Monte-Carlo
 simulations presented in
 Sec.~\ref{sec:MCresults}, Fig.~\ref{fig:LCI} A, demonstrate that the
 \emph{performance-oriented iteration}~
@@ -1037,7 +1067,7 @@ is performing very well in the present setting.
 
 For completeness we mention here that theoretically better cross-validation schemes
 have been designed for the present
-setting~\cite{XiangWahba_1996,GuXiang_2001}. These schemes do moreover
+setting~\citep{XiangWahba_1996,GuXiang_2001}. These schemes do moreover
 outperform the present \emph{performance-oriented iteration}~scheme in
 multidimensional problems. They can moreover be used in our software
 by calling function \texttt{gsspsth}~instead of \texttt{gsspsth0}. On
@@ -1048,7 +1078,7 @@ estimation of $\lambda$ while they require more computation time.
 
 One of the most surprising results of the \Smoothy~theory is that
 ``confidence intervals'' can be
-obtained~\cite{Wahba_1983,Nychka_1988,Wahba_1990,Gu_2002}. That is, a
+obtained~\citep{Wahba_1983,Nychka_1988,Wahba_1990,Gu_2002}. That is, a
 confidence band can be constructed around $\hat{\eta}_{\lambda}$ such
 that 95\% of the $\{ \eta(x_i) \}_{i=1}^N$ (where $\eta$ is again the
 truth) are contained in it \emph{on average}. The average coverage probability is
@@ -1058,7 +1088,7 @@ Results section demonstrate that they are accurate on average in the
 present setting. \emph{The pointwise coverage probability is nevertheless
 not uniform}. A well known shortcoming for smoothing spline applied to
 Gaussian
-regression~\cite{Wahba_1983,Nychka_1988,CumminsEtAl_2001}. Using Monte
+regression~\citep{Wahba_1983,Nychka_1988,Eubank_1999,CumminsEtAl_2001}. Using Monte
 Carlo simulations we show that the same goes in the present setting. 
 
 \paragraph{Numerical implementation}
@@ -1066,7 +1096,7 @@ Carlo simulations we show that the same goes in the present setting.
 All the numerical routines required to implement the
 \Smoothy~methodology of this paper (and much more) are readily
 available in Chong Gu's user contributed \R~package: \gss~(for
-\emph{general smoothing spline})~\cite{Gu_2002,Gu_2008}. The
+\emph{general smoothing spline})~\citep{Gu_2002,Gu_2008}. The
 \STAR~function, \texttt{gsspsth0}, used to
 generate the \GSSPSTH s of this manuscript does a very simple job indeed:
 \begin{enumerate}
@@ -1110,16 +1140,17 @@ confidence bands) of our \gsspsth s we used four data sets which are
 distributed with our package \STAR~(Sec.~\ref{sec:dataSets}). For each
 neuron / data set combination 
 (\emph{e.g.}, \texttt{e070528citronellal\_1}) the following
-simulations and analysis were carried out:
+\emph{parametric bootstrap}~scheme~\citep[pp
+53-56]{EfronTibshirani_1993} was carried out:
 \begin{enumerate}
-\item Get a \gsspsth, $\hat{\nu}_{\lambda}$,~using bin width of 25 ms
+\item Get a \gsspsth, $\hat{\nu}_{\lambda}$,~using a bin width of 25 ms
   which is the default value for this parameter in
   \STAR~(Fig.~\ref{fig:simPrinciple} A to B).
 \item Extract the \smp~value from the fit result. This value will be the
   target "best value" for the simulation: $\lambda_0$.
 \item For $j \, = 1 : R$ ($R$ equals 999 or 1000) do:
   \begin{enumerate}
-  \item Simulate with the \emph{thinning method}~\cite[pp
+  \item Simulate with the \emph{thinning method}~\citep[pp
     253-256]{Devroye_1986}, ideal spike trains whose discharge is an
     inhomogeneous Poisson process of instantaneous rate:
     $\hat{\nu}_{\lambda}$. The number of simulated trains
@@ -1187,14 +1218,13 @@ sets were simulated by 3, respectively 4 subprocesses of \R~each one
 carrying out 333, respectively 250, simulations. This trivial
 parallelization is very easily implemented in \R~with the user contributed
 package, \texttt{snow} (for \emph{simple network of workstation}), of
-Tierney, Rossini, Li and
-Sevcikova~\cite{TierneyEtAl_,RossiniEtAl_2003}. An additional element
+~\citep{TierneyEtAl_2008} and~\citet{RossiniEtAl_2003}. An additional element
 is required to ensure good statistical properties of these parallel
 simulations: a random number generator able to generate statistically
-independent streams of random numbers. Pierre L'\'Ecuyer and
-collaborators~\cite{LEcuyerEtAl_2002} developed such a generator which
-has been made available as an \R~user contributed package by Leydold
-and L'\'Ecuyer~\cite{LEcuyerLeydold_2005,Leydold_2007}. 
+independent streams of random numbers. \citet{LEcuyerEtAl_2002}
+developed such a generator which 
+has been made available as an \R~user contributed package
+by~\citet{LEcuyerLeydold_2005} and~\citet{Leydold_2007}. 
 
 \subsection{HTML report generation}
 \label{sec:HTMLreportGeneration}
@@ -1202,13 +1232,13 @@ and L'\'Ecuyer~\cite{LEcuyerLeydold_2005,Leydold_2007}.
 Luckily the HTML report generation is the easiest part of this
 ``Methods'' section. HTML files are plain ASCII files where
 \emph{tags}~are used to control the way text, images, etc, appear on
-the browser. These tags are surrounded by ``<>'' symbols~\cite[Chap. 3]{Murrell_2008}. This means
+the browser. These tags are surrounded by ``<>'' symbols~\citep[Chap. 3]{Murrell_2008}. This means
 that as soon one is using an analysis software which can append text
 to an ASCII file it becomes possible to write an HTML file from the
 analysis software. Of course \R~can do that and even better, thanks to
-Eric Lecoutre's package \RHTML~\cite{Lecoutre_2003}, one can write on
-HTML file without having to really learn HTML. Lecoutre short 2003
-paper~\cite{Lecoutre_2003} is enough to get one going within 15
+Eric Lecoutre's package \RHTML~\citep{Lecoutre_2003}, one can write on
+HTML file without having to really learn HTML. \citet{Lecoutre_2003} short
+paper is enough to get one going within 15
 minutes. 
 
 The ``strategy'' we followed to develop our \reportHTML~methods was
@@ -1234,27 +1264,31 @@ could hardly be simpler.
 Unless otherwise stated (\emph{e.g.},
 Sec.~\ref{sec:empiricalCIcheckWithMC}) the analysis described in this
 manuscript was carried out on laptop PC running Linux (Ubuntu
-8.04.1). \R~version 2.7.2 was compiled with
+8.04.1). \R~version 2.8.0 was compiled with
 \texttt{gcc}\footnote{\url{http://gcc.gnu.org}} 4.3.1 using \R 's
 default compilation flags. The hardware characteristics of the laptop
-were: a dual core CPU (Intel Core 2) at 2 GHz with 1 GB of RAM.
+were: a dual core CPU (Intel Core 2) at 2 GHz with 1 GB of RAM. The
+same analysis (Table~\ref{spontStats} and ~\ref{responseStats}) was also carried
+out on Windows PCs, one running Vista with a Pentium D at 2.8 GHz and 1
+GB of RAM, the other running XP with an Intel Core Duo CPU at 3 GHz
+and 2 GB of RAM. The runtimes were roughly 10\% faster with the former
+and 50\% faster for the latter.
 
 \subsection{Reproducing the present analysis}
 \label{sec:reproducibleResearch}
 
 We are trying to implement the rather strict ``reproducible research''
-paradigm of~\cite[Gentleman and Temple-Lang, 2004]{GentlemanTempleLang_2004}. This means that in addition to giving
+paradigm of~\citet{GentlemanTempleLang_2004}. This means that in addition to giving
 access to the software (\STAR) and to the data sets used in the
 present paper we provide a
-\texttt{compendium}~\cite{GentlemanTempleLang_2004} which is
+\texttt{compendium}~\citep{GentlemanTempleLang_2004} which is
 fundamentally a metafile containing both the text of the present paper
 and the \R~instructions required to \emph{regenerate} all the figures
 and tables of the paper. By editing this metafile the interested
 reader can have access to the complete description of the computations
 involved in the paper and change them if he/she wants. Like the data
 sets, the metafile is distributed with the package.
-The user contributed package \texttt{cacheSweave} of Roger
-Peng~\cite{Peng_2007} has been a tremendous help for developing our
+The user contributed package \texttt{cacheSweave} of~\citet{Peng_2007} has been a tremendous help for developing our
 compendium.
  
 \section{Results}
@@ -1362,17 +1396,19 @@ procedure, \reportHTMLspikeTrain, performs sequentially the
 ``sub-tasks'' of Sec.~\ref{sec:spontanouesActivityAnalysis}. To avoid having too
 many figures of screen shots in this paper we do not show the whole
 report here but it can be seen on our web site\footnote{
-  \url{http://www.biomedicale.univ-paris5.fr/physcerv/C\_Pouzat/STAR\_folder/e070528spontN1.html}} and it can be reproduce by the reader on his/her computer. 
+  \url{http://www.biomedicale.univ-paris5.fr/physcerv/C\_Pouzat/STAR\_folder/e070528spontN1.html}}
+and it can be reproduced by the reader on his/her computer.  
 
 Briefly, a spike train plot (Sec.~\ref{sec:spikeTrainPlot}) is made and
-added to the HTML report. For instance,
-Fig.~\ref{fig:e070528spontN4_ST} can be seen again on the screen
-shot of the HTML report shown in Fig.~\ref{fig:reportHTMLst1}.
+added to the HTML report as illustrated on the screen
+shot of the HTML report shown in Fig.~\ref{fig:reportHTMLst1} for
+neuron 3 of \texttt{e060817spont}.
 
 \begin{figure}
   \centering
   \includegraphics[width=0.8\textwidth]{figs/sc1}
-  \caption{Fig.~\ref{fig:e070528spontN4_ST} as it appears in the
+  \caption{The spike train plot of neuron 3 (data set:
+    \texttt{e060817spont}) as it appears in the
     automatically generated HTML report.}
   \label{fig:reportHTMLst1}
 \end{figure}
@@ -1418,10 +1454,10 @@ available (Sec.~\ref{sec:cch}), the
 classical histogram and a smooth version of it. Argument \textsf{chh}
 controls if a single estimation is performed or if both are
 performed. Fig.~\ref{fig:reportHTMLst3} shows a screen shot where the
-\CCH s built with neuron 4 as a reference and neuron 2 as a
+\CCH s built with neuron 3 as a reference and neuron 2 as a
 test. Confidence intervals at 95\% level are shown on these two \CCH
-s. The excess of spikes of neuron 2 roughly 100 ms before a spike in
-neuron 4 seems to be significant. 
+s. There is a clear deficit of spikes from neuron 2 in the 250 ms
+preceding neuron 3 spikes. 
 
 % If the smooth version is requested a numerical summary of the
 % fit is also printed in the report. Moreover if argument
@@ -1434,9 +1470,11 @@ neuron 4 seems to be significant.
   \centering
   \includegraphics[width=0.8\textwidth]{figs/sc2}
   \caption{\emph{Smooth}~and ``\emph{classical}'' \CCH s between
-    neuron 4 (reference) and neuron 2 (test) as they appear in
-    the automatically generated HTML report. One both plots the dotted
-  lines define a pointwise 95 \% confidence region.}
+    neuron 3 (reference) and neuron 2 (test) as they appear in
+    the automatically generated HTML report (data set:
+    \texttt{e060817spont}). On both plots the dotted
+  lines define a pointwise 95 \% confidence region. Notice the
+  different ordinate scales of the two plots.}
   \label{fig:reportHTMLst3}
 \end{figure}
 
@@ -1651,9 +1689,9 @@ from 100 to 80 \%.
 \label{sec:MCresults2}
 
 Grace Wahba who introduced the method to compute the confidence
-intervals~\cite{Wahba_1983}~also took pain insisting that these
-intervals must be interpreted ``across the function''~\cite[Wahba,
-1990, p 69]{Wahba_1990}, that is, they are valid on \emph{average}
+intervals~\citep{Wahba_1983}~also took pain insisting that these
+intervals must be interpreted ``across the function''~\citep[p
+69]{Wahba_1990}, that is, they are valid on \emph{average}
 over the $x_i$s as shown on Fig.~\ref{fig:LCI}. In order to avoid
 wrong interpretations of the confidence intervals we show in this
 section the empirical \emph{pointwise} coverage probability of the
@@ -1723,7 +1761,7 @@ A plot of the smooth PSTH with approximate 95\% CI is added (not
 shown on screen shot but it looks like the right graph of
 Fig.~\ref{fig:e070528citronellalN1_gsspsth0Demo}). A Graph showing the
 results of the Ogata's battery of tests for point
-processes~\cite{Ogata_1988} when the \gsspsth~is taken has a model of
+processes~\citep{Ogata_1988} when the \gsspsth~is taken has a model of
 the neuron's response to \emph{individual}~stimulation is added next
 (not shown). We do not discuss further this last point here given that
 showing that actual \emph{non averaged}~neuronal discharge are not
@@ -1758,6 +1796,7 @@ check the help files of \STAR.
 \label{sec:discussion}
 
 Experimental techniques used in modern neuroscience research, like MEA
+recordings but also long lasting single unit intra- or extra-cellular
 recordings, tend to generate vast amounts of data. Experience moreover
 shows
 that the analysis of these raw data generates also a lot of
@@ -1770,12 +1809,12 @@ we make our computer not only compute but also generate a lot of
 diagnostic plots. Our approach is therefore to implement an automatic ``robust''
 preliminary spike train analysis. Keeping in mind that real data have
 a tendency to wander out of our preset frames ``we'' generate and
-save many plot allowing us to scrutinize our analysis results, judge
+save many plots allowing us to scrutinize our analysis results, judge
 their trustworthiness and if necessary go back to specific stages of
 our analysis.
 
-A second issue neurophysiologists have to face when dealing with MEA
-data analysis is the management of the ``secondary'' data they
+A second issue neurophysiologists have to face when dealing with
+analysis of large data sets is the management of the ``secondary'' data they
 produce. Keeping things organized and easy to retrieve can become a
 problem especially for people who do not want to print 20 graphs per
 analyzed data set and/or have to move around with 20 kg of
@@ -1789,13 +1828,17 @@ shots have convinced our reader.
 We have implemented both the ``robust spike train analysis with lots
 of plots'' approach and the HTML report generation in an open source
 and free package: \STAR. Being open source our approach can easily
-be tailored to users/data specific needs. For our data it turns out to
+be tailored to users/data specific needs. Anyone can create his
+own sequence of automatic analysis steps out of the wide range of
+tools implemented in \STAR~(supplemented, if necessary by custom
+developed ones) and store the results easily in reports. For our data it turns out to
 work ``well'' (in the sense of actually doing what we expect it to do)
-and fast (Table~\ref{spontStats} and ~\ref{responseStats}). But we insist again on the preliminary aspect
+and fast (Table~\ref{spontStats} and ~\ref{responseStats}). But we
+insist again on the preliminary aspect 
 of this automatic analysis. Most of the data we showed require more
 sophisticated analysis techniques.
 
-The use of the \Smoothy~methodology has been decisive in the
+The use of the \Smoothy~methodology has been instrumental in the
 development of a robust automatic analysis. We have tried to justify
 this methodological choice on both ``theoretical'' (Sec.~\ref{sec:GSSPSTH0}) and
 ``practical'' (Sec.~\ref{sec:MCresults} and ~\ref{sec:MCresults2}) grounds. We
@@ -1809,10 +1852,26 @@ confidence interval should be larger where the estimate undergoes a
 fast slope change. If a data analyst wanted to make a strong statement
 about differences of sharp peak on \gsspsth s, we would recommend for
 now a Monte Carlo simulation to be carried out in order to correct for
-the bias of the estimated \gsspsth. We could also consider implementing
-the method described by~\cite[Cummins et al, 2001]{CumminsEtAl_2001}
-to set locally the \smp~(and get a uniform coverage probability).
-We have exposed here only ``the tip of the iceberg'' of what can be
+the bias of the estimated \gsspsth~\citep[following the bootstrap approach
+of][pp 364-365]{DavisonHinkley_1997}. We could also consider implementing
+the method described by~\citet{CumminsEtAl_2001}
+to set locally the \smp~(and get a uniform coverage probability). 
+The other candidate approaches like the ``Bayesian adaptative
+regression splines'' (BARS) of
+\citet{WallstromEtAl_2008}, local likelihood regression
+\citep{TibshiraniHastie_1987,Loader_1999} or 
+penalized regression spline \citep{Wood_2006} should also be
+made available in \STAR. All these approaches can, to some
+extent, be implemented automatically, provide error bars and are
+available in R. A thorough comparative study of them would clearly be
+of great interest for the community but that would require a separate
+paper. The present \STAR~release already includes an interface with the
+penalized regression spline package (mgcv) of \citet{Wood_2006} and the next
+one will include an interface with the locfit package of
+Loader (for local likelihood regression) and with the BARS package, as
+soon as the latter becomes available on CRAN. We will then be able to
+undertake such a comparative study.
+Finally we have only exposed here  ``the tip of the iceberg'' of what can be
 done with \Smoothy~and spike trains. The methodology can be readily
 extended to multidimensional cases and provide an elegant and
 practical solution to, at least some, conditional intensity estimation
@@ -1823,7 +1882,12 @@ problems (Pouzat, Chaffiol and Gu \emph{in preparation}).
 
 We thank Chong Gu, Laurent Moreaux, Romain Franconville and Alain Marty for
 comments on the manuscript. C. Pouzat was partly supported by a grant
-from the AFM/Decrypton project. A. Chaffiol was supported by a DGA (?) fellowship.
+from the Decrypton project, a partnership between the Association Fran\c caise contre les
+Myopathies (AFM), IBM and the Centre National de la Recherche
+Scientifique (CNRS) and by a CNRS GDR grant (Syst\`eme Multi-\'el\'ectrodes
+et traitement du signal appliqu\'es \`a l'\'etude des r\'eseaux de
+Neurones). A. Chaffiol was supported by a 
+fellowship from the Commissariat \`a l'\'Energie Atomique (CEA).
 
 \pagebreak
 \appendix
@@ -1963,7 +2027,7 @@ function does.
 We also remark that when we entered \textsf{args(library)} we passed a
 function, \library, as an argument of another function, \args, without
 doing anything special. \R~being based on the \texttt{Scheme}
-language~\cite{IhakaGentleman_1996} \emph{does not}~make any
+language~\citep{IhakaGentleman_1996} \emph{does not}~make any
 differences between functions and other types of objects.
 
 \subsection{Loading data}
@@ -2616,9 +2680,9 @@ sessionInfo()
 
 Fig.~\ref{fig:lambdaEffect} is obtained using the version of
 \emph{penalized iteratively re-weighted least squares}~described
-by~\cite[Gu, pp 62, 76 and 151]{Gu_2002}. 
+by~\citep[pp 62, 76 and 151]{Gu_2002}. 
 % There is just one tiny
-% mistake in the second paragraph of Sec. 3.4.1~\cite[p 76]{Gu_2002}, where
+% mistake in the second paragraph of Sec. 3.4.1~\citep[p 76]{Gu_2002}, where
 % one should read: ``... solves for $\mathbf{u}$ from $G^T \mathbf{u} = F_2^T
 % \mathbf{Y}$ by forward substitution and for $\mathbf{v}$ from $G
 % \mathbf{v} = \mathbf{u}$ by backsubstitution'' (in the original the
@@ -3062,14 +3126,14 @@ dev.off()
 
 
 \pagebreak
-\bibliographystyle{plain}
+\bibliographystyle{elsart-harv}
 \bibliography{PouzatChaffiol_STARdraft}
 
 \pagebreak
 
-%\listoffigures
+\listoffigures
 
-%\printindex
+\printindex
 
 
 <<reset options, echo=FALSE, results=hide>>=

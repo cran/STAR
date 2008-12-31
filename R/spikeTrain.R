@@ -1,4 +1,5 @@
 as.spikeTrain <- function(x) {
+  if (inherits(x,"CountingProcessSamplePath")) x <- spikeTimes(x)
   if (!is.numeric(x)) 
     x <- as.numeric(x)
   if (!identical(length(unique(x)), length(x))) 

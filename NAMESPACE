@@ -1,3 +1,9 @@
+useDynLib(STAR,
+          crossTight_sym=crossTight,
+          crossTightlog,
+          crossTightWithB,
+          crossTightWithBlog)
+
 import(survival,mgcv,R2HTML,graphics,stats)
 
 export(brt4df,
@@ -90,7 +96,25 @@ export(brt4df,
        summary.gsslockedTrain0,
        plot.gsslockedTrain0,
        gssObj.gsslockedTrain0,
-       reportHTML.gam
+       reportHTML.gam,
+       crossTight,
+       mkTightBMtargetFct,
+       crossGeneral,
+       plot.FirstPassageTime,
+       lines.FirstPassageTime,
+       print.FirstPassageTime,
+       summary.FirstPassageTime,
+       mkCPSP,
+       print.CountingProcessSamplePath,
+       plot.CountingProcessSamplePath,
+       lines.CountingProcessSamplePath,
+       as.CPSP,
+       summary.CountingProcessSamplePath,
+       print.CountingProcessSamplePath.summary,
+       plot.CountingProcessSamplePath.summary,
+       "%tt%",
+       isi,
+       .mkDiscreteTrain
        )
 
 S3method(coef,durationFit)
@@ -165,3 +189,16 @@ S3method(image,jpsth)
 S3method(persp,jpsth)
 
 S3method(reportHTML,gam)
+
+S3method(plot,FirstPassageTime)
+S3method(lines,FirstPassageTime)
+S3method(print,FirstPassageTime)
+S3method(summary,FirstPassageTime)
+
+S3method(plot,CountingProcessSamplePath)
+S3method(lines,CountingProcessSamplePath)
+S3method(print,CountingProcessSamplePath)
+S3method(summary,CountingProcessSamplePath)
+
+S3method(plot,CountingProcessSamplePath.summary)
+S3method(print,CountingProcessSamplePath.summary)

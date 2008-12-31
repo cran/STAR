@@ -35,9 +35,9 @@ varianceTime <- function (spikeTrain,
                            s2 <- var(counts)
                            sigma2 <- mean.rate * ws
                            ciUp <- sapply(CI, function(ci)
-                                          qnorm(1 - (1 - ci)/2,sigma2, sigma2 * sqrt(2/nBins)))
+                                          qnorm(1 - (1 - ci)/2,sigma2, sqrt((2*sigma2^2+sigma2)/nBins)))
                            ciLow <- sapply(CI, function(ci)
-                                           max(qnorm((1 - ci)/2,sigma2, sigma2 * sqrt(2/nBins)), 0))
+                                           max(qnorm((1 - ci)/2,sigma2, sqrt((2*sigma2^2+sigma2)/nBins)), 0))
                            c(s2, sigma2, ciUp, ciLow)
                          }
                          )

@@ -5,12 +5,12 @@
 \description{
   Given a \code{spikeTrain} or a \code{repeatedTrain} objects or a
   \code{list} of any of those two, \code{mkGLMdf} generates a
-  \code{data.frame}, by discretizing time, allowing \code{glm} and
+  \code{data.frame}, by discretizing time, allowing \code{glm}, \code{gss} and
   \code{gam} to be used with the \code{poisson} or \code{binomial}
   family to fit the spike trains.
 }
 \usage{
-mkGLMdf(obj, delta, lwr, upr, discrete = TRUE)
+mkGLMdf(obj, delta, lwr, upr)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -23,13 +23,9 @@ mkGLMdf(obj, delta, lwr, upr, discrete = TRUE)
   \item{upr}{the time (in s) at which the recording window ends. If
     \code{missing} a value is obtained
     using the \code{\link{ceiling}} of the largest spike time.}
-  \item{discrete}{a logical. Should time differences be reported in bin
-    (default value) or as actual times (\code{FALSE})?}
+  
 }
 \details{
-  If \code{discrete} is set to \code{FALSE} the actual time differences
-  (from the "raw" data in \code{obj}) are reported.
-
   The construction of the returned list is very clearly explained in Jim
   Lindsey's paper (1995). The idea has been used several time in the
   field: Brillinger (1988), Kass and Ventura (2001), Truccolo et al (2005). 
@@ -41,8 +37,7 @@ mkGLMdf(obj, delta, lwr, upr, discrete = TRUE)
   \item{time }{time at bin center.}
   \item{neuron }{a factor giving the neuron to which this row of the
     data frame refers.}
-  \item{lN.x }{an integer (if \code{discrete} is \code{TRUE}) or a
-    numeric (if \code{discrete} is \code{FALSE}). \code{x} takes value
+  \item{lN.x }{a \code{numeric}. \code{x} takes value
     1, 2, ..., number of neurons present in \code{obj}. The time to the
     last event of the corresponding neuron.}
 
@@ -74,11 +69,40 @@ mkGLMdf(obj, delta, lwr, upr, discrete = TRUE)
 \seealso{
   \code{\link{data.frame}},
   \code{\link{glm}},
+  \code{\link[gss]{gssanova}},
   \code{\link{mgcv}},
   \code{\link{as.spikeTrain}},
   \code{\link{as.repeatedTrain}}
 }
 \examples{
+## Analysis of a "simple" spontaneous train
+## load the data
+data(e060517spont)
+## creat a data frame using the 3rd neuron
+e060517spontN3df <- mkGLMdf(e060517spont[["neuron 3"]],0.0025,0,60)
+## split the data in 2 parts, one for the fit, the other for the test
+e060517spontN3dfe <- e060517spontN3df[e060517spontN3df$time <= 30,]
+e060517spontN3dfl <- e060517spontN3df[e060517spontN3df$time > 30,]
+## fit a renewal model with gssanova
+e060517spontN3dflFa <- gssanova(event ~ lN.1,
+                                data=e060517spontN3dfl,
+                                family="binomial",
+                                seed=20061001)
+## for the test, make sure that the variable is within the same
+## bounds as during the fitting period
+mlN.1 <- max(e060517spontN3dfl$lN.1)
+e060517spontN3dfe$lN.1 <- sapply(e060517spontN3dfe$lN.1,
+                                 function(x) min(x,mlN.1)
+                                 )
+## do the time transformation
+eta.test <- predict(e060517spontN3dflFa,e060517spontN3dfe)   
+tilog <- function(x) exp(x)/(1+exp(x))
+lambdaD.test <- tilog(eta.test)
+Lambda.test <- cumsum(lambdaD.test)
+tt <- mkCPSP(Lambda.test[e060517spontN3dfe$event==1])
+tt
+plot(summary(tt))
+
 \dontrun{
 ## Start with simulatd data #####
 ## Use thinning method and for that define a couple
@@ -220,13 +244,11 @@ hist(interData.lt1v2,bw=0.0025)
 dfAll <- mkGLMdf(interData,delta=0.001,lwr=0,upr=60)
 ## build the sub-list relating to neuron 2
 dfN2 <- dfAll[dfAll$neuron=="2",]
-## load the mgcv library
-library(mgcv)
 ## fit dfN2 with a smooth effect for the elasped time since the last
 ## event of neuron 2 and another one with the elasped time since the
 ## last event from neuron 1. Use moroever only the events for which the
 ## the last event from neuron 1 occurred at most 100 ms ago.
-dfN2.fit0 <- gam(event ~ s(lN.1,bs="cr") + s(lN.2,bs="cr"), data=dfN2, family=poisson, subset=(dfN2$lN.1 <=100))
+dfN2.fit0 <- gam(event ~ s(lN.1,bs="cr") + s(lN.2,bs="cr"), data=dfN2, family=poisson, subset=(dfN2$lN.1 <=0.1))
 ## look at the summary
 summary(dfN2.fit0)
 ## plot the smooth term of neuron 1
@@ -237,25 +259,57 @@ plot(dfN2.fit0,select=1,rug=FALSE,ylim=c(-0.8,0.8))
 xx <- seq(0.001,0.3,0.001)
 ## plot the estimated conditional intensity when the last spike
 ## from neuron 1 came a long time ago (100 ms)
-plot(xx,exp(predict(dfN2.fit0,data.frame(lN.1=rep(100,300),lN.2=1:300))),type="l")
+plot(xx,exp(predict(dfN2.fit0,data.frame(lN.1=rep(100,300)*0.001,lN.2=(1:300)*0.001))),type="l")
 ## add a line for the true conditional intensity
 lines(xx,hlnorm(xx,-2.4,0.4)*0.001,col=2)
 ## do the same thing for the survival function
-plot(xx,exp(-cumsum(exp(predict(dfN2.fit0,data.frame(lN.1=rep(100,300),lN.2=1:300))))),type="l")
+plot(xx,exp(-cumsum(exp(predict(dfN2.fit0,data.frame(lN.1=rep(100,300)*0.001,lN.2=(1:300)*0.001))))),type="l")
 lines(xx,plnorm(xx,-2.4,0.4,lower.tail=FALSE),col=2)
 
+## use gssanova
+## split the data set in 2 parts, one for the fit, the other for the
+## test
+dfN2e <- dfN2[dfN2$time <= 20,]
+dfN2l <- dfN2[dfN2$time > 20,]
+## fit the same model as before with gssanova
+dfN2.fit1 <- gssanova(event ~ lN.1 + lN.2, data=dfN2e, family="poisson", seed=20061001) 
+## plot the effect of neuron 1
+pred1 <- predict(dfN2.fit1,data.frame(lN.1=seq(0.001,0.220,0.001),
+                                      lN.2=rep(median(dfN2e$lN.2),220)),
+                 se=TRUE)
+plot(seq(0.001,0.220,0.001),
+     pred1$fit,type="l",
+     ylim=c(min(pred1$fit-1.96*pred1$se.fit),max(pred1$fit+1.96*pred1$se.fit))
+    )
+lines(seq(0.001,0.220,0.001),pred1$fit-1.96*pred1$se.fit,lty=2)
+lines(seq(0.001,0.220,0.001),pred1$fit+1.96*pred1$se.fit,lty=2)
+## transform the time of the late part of the train
+## first make sure than lN.1 and lN.2 are within the right bounds
+m1 <- max(dfN2e$lN.1)
+m2 <- max(dfN2e$lN.2)
+dfN2l$lN.1 <- sapply(dfN2l$lN.1, function(x) min(m1,x))
+dfN2l$lN.2 <- sapply(dfN2l$lN.2, function(x) min(m2,x))
+predl <- predict(dfN2.fit1,dfN2l)
+Lambda <- cumsum(exp(predl))
+ttl <- mkCPSP(Lambda[dfN2l$event==1])
+ttl
+plot(summary(ttl))
+## see what happens without time transformation
+rtl <- mkCPSP(dfN2l$time[dfN2l$event==1])
+plot(summary(rtl))
+
 ## Now repeat the fit including a possible contribution from neuron 3
-dfN2.fit1 <- gam(event ~ s(lN.1,bs="cr") + s(lN.2,bs="cr") + s(lN.3,bs="cr"), data=dfN2, family=poisson, subset=(dfN2$lN.1 <=100) & (dfN2$lN.3 <= 100)) 
+dfN2.fit1 <- gam(event ~ s(lN.1,bs="cr") + s(lN.2,bs="cr") + s(lN.3,bs="cr"), data=dfN2, family=poisson, subset=(dfN2$lN.1 <=0.1) & (dfN2$lN.3 <= 0.1)) 
 ## Use the summary to see if the new element brings something
 summary(dfN2.fit1)
 ## It does not!
 ## Now look at neurons 3 and 4 (ie, post2 and post3)
 dfN3 <- dfAll[dfAll$neuron=="3",]
-dfN3.fit0 <- gam(event ~ s(lN.1,k=20,bs="cr") + s(lN.3,k=15,bs="cr"),data=dfN3,family=poisson, subset=(dfN3$lN.1 <=100))
+dfN3.fit0 <- gam(event ~ s(lN.1,k=20,bs="cr") + s(lN.3,k=15,bs="cr"),data=dfN3,family=poisson, subset=(dfN3$lN.1 <=0.1))
 summary(dfN3.fit0)
 plot(dfN3.fit0,select=1,ylim=c(-1.5,1.8),rug=FALSE)
 dfN4 <- dfAll[dfAll$neuron=="4",]
-dfN4.fit0 <- gam(event ~ s(lN.1,k=20,bs="cr") + s(lN.4,k=15,bs="cr"),data=dfN4,family=poisson, subset=(dfN4$lN.1 <=100))
+dfN4.fit0 <- gam(event ~ s(lN.1,k=20,bs="cr") + s(lN.4,k=15,bs="cr"),data=dfN4,family=poisson, subset=(dfN4$lN.1 <=0.1))
 summary(dfN4.fit0)
 plot(dfN4.fit0,select=1,ylim=c(-1.8,1.5),rug=FALSE)
 }

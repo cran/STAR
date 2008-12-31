@@ -32,17 +32,18 @@ plot.transformedTrain <- function(x,
 
   mainGiven <- !missing(main)
   if (show[1]) {
+    slopeKS <- length(x)/max(x)
     plot(as.numeric(x),Y,type="n",
          xlab="Transformed time",
          ylab="Cumulative number of events",
          main=ifelse(mainGiven,main,caption[1]),
          sub=ifelse(mainGiven,caption[1],"")
          )
-    abline(a=0,b=1)
-    abline(a=1.36*sqrt(nbSpikes),1,lty=2)
-    abline(a=-1.36*sqrt(nbSpikes),1,lty=2)
-    abline(a=1.63*sqrt(nbSpikes),1,lty=2)
-    abline(a=-1.63*sqrt(nbSpikes),1,lty=2)
+    abline(a=0,b=slopeKS)
+    abline(a=1.36*sqrt(nbSpikes),slopeKS,lty=2)
+    abline(a=-1.36*sqrt(nbSpikes),slopeKS,lty=2)
+    abline(a=1.63*sqrt(nbSpikes),slopeKS,lty=2)
+    abline(a=-1.63*sqrt(nbSpikes),slopeKS,lty=2)
     lines(as.numeric(x),Y,col=2,lwd=2)
   }
 

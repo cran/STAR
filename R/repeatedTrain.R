@@ -202,7 +202,7 @@ psth <- function (repeatedTrain,
     if (length(breaks)==1) breaks <- seq(l,r,length.out=breaks+1)
     counts <- t(sapply(repeatedTrain,
                        function(train)
-                       hist(x = train, breaks = breaks,
+                       hist(x = unclass(train), breaks = breaks,
                             include.lowest = include.lowest, 
                             right = right, plot = FALSE)$counts
                        )
