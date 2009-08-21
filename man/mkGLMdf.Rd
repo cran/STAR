@@ -77,31 +77,34 @@ mkGLMdf(obj, delta, lwr, upr)
 \examples{
 ## Analysis of a "simple" spontaneous train
 ## load the data
-data(e060517spont)
-## creat a data frame using the 3rd neuron
-e060517spontN3df <- mkGLMdf(e060517spont[["neuron 3"]],0.0025,0,60)
+data(e060824spont)
+## create a data frame using the 1st neuron
+DFA <- subset(mkGLMdf(e060824spont,0.004,0,59),neuron==1)
+## Add the previous ISI to the data frame
+DFA <- within(DFA,i1 <- isi(DFA,lag=1))
+DFA <- DFA[complete.cases(DFA),]
+## estimate the "map to uniform" functions for 2 variables:
+## 1) the elapsed time since the last spike (lN.1)
+## 2) the previous insterspike interval
+## Do this estimation on the first half of the set
+m2u1 <- mkM2U(DFA,"lN.1",0,29)
+m2ui <- mkM2U(DFA,"i1",0,29,maxiter=200)
+## create "mapped" variables
+DFA <- within(DFA,e1t <- m2u1(lN.1))
+DFA <- within(DFA,i1t <- m2ui(i1))
 ## split the data in 2 parts, one for the fit, the other for the test
-e060517spontN3dfe <- e060517spontN3df[e060517spontN3df$time <= 30,]
-e060517spontN3dfl <- e060517spontN3df[e060517spontN3df$time > 30,]
-## fit a renewal model with gssanova
-e060517spontN3dflFa <- gssanova(event ~ lN.1,
-                                data=e060517spontN3dfl,
-                                family="binomial",
-                                seed=20061001)
-## for the test, make sure that the variable is within the same
-## bounds as during the fitting period
-mlN.1 <- max(e060517spontN3dfl$lN.1)
-e060517spontN3dfe$lN.1 <- sapply(e060517spontN3dfe$lN.1,
-                                 function(x) min(x,mlN.1)
-                                 )
-## do the time transformation
-eta.test <- predict(e060517spontN3dflFa,e060517spontN3dfe)   
-tilog <- function(x) exp(x)/(1+exp(x))
-lambdaD.test <- tilog(eta.test)
-Lambda.test <- cumsum(lambdaD.test)
-tt <- mkCPSP(Lambda.test[e060517spontN3dfe$event==1])
-tt
-plot(summary(tt))
+DFAe <- subset(DFA, time <= 29)
+DFAl <- subset(DFA, time > 29)
+## fit an additive model with gssanova
+m1.fit <- gssanova(event ~ e1t + i1t,
+                   data = DFAe,
+                   family="binomial",
+                   seed=20061001)
+## test the model by "time transforming" the late part
+tt.l <- m1.fit \%tt\% DFAl
+tt.l.summary <- summary(tt.l)
+tt.l.summary
+plot(tt.l.summary,which=c(1,2,4,6))
 
 \dontrun{
 ## Start with simulatd data #####

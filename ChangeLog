@@ -1,8 +1,23 @@
+Thu Aug 21 19:00:00 CET, Christophe Pouzat <christophe.pouzat@gmail.com>
+	* DESCRIPTION: VErsion 0.3-2
+	* inst/doc: change IEwSTAR.Rnw for IEwSTARshort.Rnw a shorter
+	version faster to regenerate.
+
+Thu Aug 20 17:00:00 CET, Christophe Pouzat <christophe.pouzat@gmail.com>
+	* DESCRIPTION: Version 0.3-1
+	* inst/doc: moved first vignette (PouzatChaffiolSTARdraft.Rnw) to
+	STAR website and removed it from the package. Add new vignette
+	IEwSTAR.Rnw
+	* R: Added quickPredict, %qp%, plot.quickPredict,
+	lines.quickPredict, image.quickPredict, contour.quickPredict,
+	persp.quickPredict, mkM2U, mkAR, changeScale, plot.ssanova,
+	plot.ssanova0, predictLogProb
+	* man: corresponding documentation
+
 Wed Dec 31 14:00:00 CET, Christophe Pouzat <christophe.pouzat@gmail.com>
 	* DESCRIPTION: Version 0.2-2
 	* inst/doc: Moved second vignette (OnCPtests.Rnw) to STAR website
 	and removed it from the package.
-	
 	
 Tue Dec 23 21:00:00 CET, Christophe Pouzat <christophe.pouzat@gmail.com>
 

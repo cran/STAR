@@ -35,7 +35,6 @@ rexpMLE(yi, ni = numeric(length(yi)) + 1,
     function using the log of the parameters.}
   \item{call}{the matched call.}
 }
-\references{}
 \author{Christophe Pouzat  \email{christophe.pouzat@gmail.com} }
 \seealso{
   \code{\link{drexp}},

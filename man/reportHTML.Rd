@@ -30,7 +30,6 @@ reportHTML(object, filename, extension, directory, Title, ...)
   written to disk together with the \code{R} variables generated during
   the analysis , if an analysis was performed.
 }
-\references{}
 \author{Christophe Pouzat \email{christophe.pouzat@gmail.com} }
 \seealso{
   \code{\link{reportHTML.spikeTrain}},

@@ -114,8 +114,30 @@ export(brt4df,
        plot.CountingProcessSamplePath.summary,
        "%tt%",
        isi,
-       .mkDiscreteTrain
+       .mkDiscreteTrain,
+       quickPredict,
+       "%qp%",
+       plot.quickPredict,
+       lines.quickPredict,
+       image.quickPredict,
+       contour.quickPredict,
+       persp.quickPredict,
+       mkM2U,
+       mkAR,
+       changeScale,
+       plot.ssanova,
+       plot.ssanova0,
+       predictLogProb
        )
+
+S3method(plot,ssanova)
+S3method(plot,ssanova0)
+
+S3method(plot,quickPredict)
+S3method(lines,quickPredict)
+S3method(image,quickPredict)
+S3method(contour,quickPredict)
+S3method(persp,quickPredict)
 
 S3method(coef,durationFit)
 S3method(logLik,durationFit)

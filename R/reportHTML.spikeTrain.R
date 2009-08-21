@@ -300,7 +300,8 @@ reportHTML.spikeTrain <- function(object,
                    HTML.title("GAM goodness of fit diagnostics:",,
                               file=fullName,HR=4)
                    gcFigName <- paste(filename,
-                                      "_",names(otherST)[trainIdx],
+                                      "_",
+                                      paste(strsplit(names(otherST)[trainIdx]," ")[[1]],collapse="_"),
                                       "_gc.png",sep="")
                    figFname <- paste(directory,"/",gcFigName,sep="")
                    png(figFname,width=800,height=800)
@@ -317,7 +318,8 @@ reportHTML.spikeTrain <- function(object,
                    HTML.title("Smoothed and \"classical\" cross-intensity plots:",
                               file=fullName,HR=4)
                    ciFigName <- paste(filename,
-                                      "_",names(otherST)[trainIdx],
+                                      "_",
+                                      paste(strsplit(names(otherST)[trainIdx]," ")[[1]],collapse="_"),
                                       "_ci.png",sep="")
                    figFname <- paste(directory,"/",ciFigName,sep="")
                    png(figFname,width=1000,height=700)
@@ -334,7 +336,8 @@ reportHTML.spikeTrain <- function(object,
                    HTML.title("Smoothed cross-intensity plot:",
                               file=fullName,HR=4)
                    ciFigName <- paste(filename,
-                                      "_",names(otherST)[trainIdx],
+                                      "_",
+                                      paste(strsplit(names(otherST)[trainIdx]," ")[[1]],collapse="_"),
                                       "_ci.png",sep="")
                    figFname <- paste(directory,"/",ciFigName,sep="")
                    png(figFname,width=500,height=500)
