@@ -127,7 +127,13 @@ export(brt4df,
        changeScale,
        plot.ssanova,
        plot.ssanova0,
-       predictLogProb
+       predictLogProb,
+       thinProcess,
+       maxIntensity,
+       mkSelf,
+       mkMappedI,
+       mkSimFct,
+       mkPostSimAnalysis
        )
 
 S3method(plot,ssanova)

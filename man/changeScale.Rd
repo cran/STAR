@@ -32,9 +32,7 @@ Christophe Pouzat \email{christophe.pouzat@gmail.com}
 
 \seealso{
   \code{\link[STAR]{quickPredict}},
-  \code{\link[STAR]{image.quickPredict}},
-  \code{\link[STAR]{contour.quickPredict}},
-  \code{\link[STAR]{persp.quickPredict}}
+  \code{\link[STAR]{plot.quickPredict}}
 }
 \examples{
 \dontrun{

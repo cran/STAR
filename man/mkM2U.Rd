@@ -42,18 +42,18 @@ mkM2U(df, vN, low, high, delta, alpha=2, ...)
   \code{delta}. Function \code{\link[gss]{ssden}} is then called on the
   histogram and the result is stored in object \code{ii.fit} (This
   object is stored in the \code{closure} of the returned function). The returned
-  function is the result of a call of \code{\link[gss]{pssden}} on
+  function is the result of a call of \code{pssden} on
   ii.fit and the argument.
   
   A function inverting the "mapping to uniform function", that is, a
-  quantile function, is also returned as \link[attr]{attribute}
+  quantile function, is also returned as \link{attributes}
   \code{qFct}. This 
   inverse function is obtained by numerical inversion, calling
   \code{\link{uniroot}} internally. Additional arguments can be passed
   to \code{\link{uniroot}} via the \dots argument of the function.
 
   A function returning the smooth density estimate is returned as
-  \link[attr]{attribute} \code{dFct}.
+  \link{attributes} \code{dFct}.
 }
 \value{
   A function returning the probability for \code{vN} random variable to
@@ -80,17 +80,15 @@ Christophe Pouzat \email{christophe.pouzat@gmail.com}
   created and stored in the returned function closure. This look-up
   table is used to speed up the computations performed by the returned
   function which uses \code{\link{integrate}} and not
-  \code{\link[gss]{pssden}}. It is also used to speed up the
+  \code{pssden}. It is also used to speed up the
   computations of the inverse function (returned as attribute
   \code{qFct}) which uses \code{\link{uniroot}} and not
-  \code{\link[gss]{qssden}}.
+  \code{qssden}.
 }
 
 \seealso{
   \code{\link[gss]{ssden}},
-  \code{\link[gss]{pssden}},
   \code{\link[gss]{dssden}},
-  \code{\link[gss]{qssden}},
   \code{\link{integrate}},
   \code{\link{uniroot}},
   \code{\link[STAR]{mkGLMdf}}

@@ -1,5 +1,21 @@
-Thu Aug 21 19:00:00 CET, Christophe Pouzat <christophe.pouzat@gmail.com>
-	* DESCRIPTION: VErsion 0.3-2
+Tue Sep 29 11:00:00 CET, Christophe Pouzat <christophe.pouzat@gmail.com>
+	* DESCRIPTION: Version 0.3-4
+	* man: correct link problems for compatibility with next R version
+	(R-2.10) in files: changeScale.Rd, gssLockedTrain.Rd, mkM2U.Rd,
+	plot.ssanova.Rd. 
+
+Mon Sep 28 11:00:00 CET, Christophe Pouzat <christophe.pouzat@gmail.com>
+	* DESCRIPTION: Version 0.3-4
+	* man: correct a link in gsspsth.Rd
+	
+Fri Sep 25 15:00:00 CET, Christophe Pouzat <christophe.pouzat@gmail.com>
+	* DESCRIPTION: Version 0.3-3
+	* R: Added thinProcess, maxIntensity, mkSelf, mkMappedI, mkSimFct,
+	mkPostSimAnalysis. 
+	* man: corresponding documentation.
+
+Fri Aug 21 19:00:00 CET, Christophe Pouzat <christophe.pouzat@gmail.com>
+	* DESCRIPTION: Version 0.3-2
 	* inst/doc: change IEwSTAR.Rnw for IEwSTARshort.Rnw a shorter
 	version faster to regenerate.
 

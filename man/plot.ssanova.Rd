@@ -41,8 +41,7 @@ objects in package \code{mgcv}.
 }
 \seealso{
   \code{\link[STAR]{quickPredict}},
-  \code{\link[STAR]{plot.quickPredict}},
-  \code{\link[STAR]{contour.quickPredict}}
+  \code{\link[STAR]{plot.quickPredict}}
 }
 \examples{
 \dontrun{
