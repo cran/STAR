@@ -170,7 +170,7 @@ gssObj <- function(object,
 
 gssObj.gsspsth <- function(object,...) {
 
-  evalq(gfit, env=environment(object$lambdaFct))
+  evalq(gfit, envir=environment(object$lambdaFct))
 
 }
 

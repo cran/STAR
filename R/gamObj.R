@@ -6,7 +6,7 @@ gamObj <- function(object,
 
 gamObj.gampsth <- function(object,...) {
 
-  evalq(PoissonF, env=environment(object$lambdaFct))
+  evalq(PoissonF, envir=environment(object$lambdaFct))
 
 }
 

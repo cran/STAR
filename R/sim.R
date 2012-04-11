@@ -53,7 +53,7 @@ maxIntensity <- function(object,
 
   targetFct <- function(p) {
     p <- exp(p);p <- p/(1+p)
-    p <- matrix(p,nr=1,dimnames=list(NULL,allVN))
+    p <- matrix(p,nrow=1,dimnames=list(NULL,allVN))
     -predict(object,as.data.frame(p))
   }
   
@@ -62,7 +62,7 @@ maxIntensity <- function(object,
                   method="BFGS",
                   ...)$par
   posMax <- exp(posMax);posMax <- posMax/(1+posMax)
-  posMax <- matrix(posMax,nr=1,dimnames=list(NULL,allVN))
+  posMax <- matrix(posMax,nrow=1,dimnames=list(NULL,allVN))
   IFct(as.data.frame(posMax))*1.1
   
 }
@@ -288,12 +288,12 @@ mkSimFct <- function(object,
   for (fn in m2uNames) {
     ## get the names of the variables contained in
     ## each function's environment
-    envVN <- ls(env=environment(m2uFctList[[fn]]))
+    envVN <- ls(envir=environment(m2uFctList[[fn]]))
     lapply(envVN,
            function(vn) {
              exp <- parse(text=vn)
-             value <- eval(exp,env=environment(m2uFctList[[fn]]))
-             assign(vn,value,env=envList[[fn]])
+             value <- eval(exp,envir=environment(m2uFctList[[fn]]))
+             assign(vn,value,envir=envList[[fn]])
            }
            )
     environment(m2uFctList[[fn]]) <- envList[[fn]]

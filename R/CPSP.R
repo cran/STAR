@@ -122,7 +122,7 @@ lines.CountingProcessSamplePath <- function(x,
   ##  x: A CountingProcessSamplePath object
   ##  ...: additional arguments passed to segments
   
-  xx <- evalq(st,env=environment(x$cpspFct))
+  xx <- evalq(st,envir=environment(x$cpspFct))
   n <- length(xx)
   xlim <- c(x$from,
             x$to
