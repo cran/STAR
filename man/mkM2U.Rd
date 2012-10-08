@@ -94,6 +94,7 @@ Christophe Pouzat \email{christophe.pouzat@gmail.com}
   \code{\link[STAR]{mkGLMdf}}
 }
 \examples{
+\dontrun{
 require(STAR)
 data(e060824spont)
 DFA <- subset(mkGLMdf(e060824spont,0.004,0,59),neuron==1)
@@ -106,7 +107,7 @@ DFA <- within(DFA,i1t <- m2ui(i1))
 with(DFA,plot(ecdf(e1t[time>29]),pch="."))
 abline(a=0,b=1,col=2,lty=2)
 with(DFA,plot(ecdf(i1t[time>29]),pch="."))
-abline(a=0,b=1,col=2,lty=2)
+abline(a=0,b=1,col=2,lty=2)}
 }
 \keyword{models}
 \keyword{regression}

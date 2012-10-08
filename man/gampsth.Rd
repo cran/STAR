@@ -126,6 +126,7 @@ gampsth(repeatedTrain, binSize = 0.025, k = 100,
   \code{\link{reportHTML.repeatedTrain}},
 }
 \examples{
+\dontrun{
 ## Get the e070528citronellal data set into workspace
 data(e070528citronellal)
 ## Compute gampsth without a plot for neuron 1
@@ -149,7 +150,7 @@ rug(X,col=2)
 theBS <- diff(n1CitrGAMPSTH[["mids"]])[1]
 Y <- n1CitrGAMPSTH$lambdaFct(n1CitrGAMPSTH$mids)*theBS*n1CitrGAMPSTH$nbTrials
 lines(n1CitrGAMPSTH$mids,Y,col=4,lwd=2)
-}
+}}
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.
 \keyword{models}

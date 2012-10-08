@@ -99,11 +99,12 @@
   \code{\link{frt}}
 }
 \examples{
+\dontrun{
 ## load e070528citronellal data set
 data(e070528citronellal)
 ## make a standard analysis on the first neuron
 reportHTML(e070528citronellal[["neuron 1"]],"e070528citronellalN1",stim=c(6.14,6.64))
-
+}
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.

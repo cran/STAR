@@ -77,6 +77,7 @@ gamlockedTrain(lockedTrain, bw = 0.001, bs = "cr", k = 100, ...)
   \code{\link[mgcv]{gam}}
 }
 \examples{
+\dontrun{
 ## load e070528spont data set
 data(e070528spont)
 ## create a lockedTrain object with neuron 1 as reference
@@ -92,7 +93,7 @@ plot(slt1.3)
 ## do some check on the gam fit
 summary(slt1.3)
 gam.check(gamObj(slt1.3))
-}
+}}
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.
 \keyword{models}

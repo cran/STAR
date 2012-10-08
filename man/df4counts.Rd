@@ -44,6 +44,7 @@ df4counts(repeatedTrain, breaks = length(repeatedTrain))
   \code{\link{psth}}
 }
 \examples{
+\dontrun{
 ## Load the Vanillin responses of the first
 ## cockroach data set
 data(CAL1V)
@@ -70,5 +71,5 @@ CAL1Vn1DFglm <- glm(Count ~ Bin + Trial,family=poisson,data=CAL1Vn1DF)
 ## use an anova to see that both the Bin effect and the trial effect are
 ## highly significant
 anova(CAL1Vn1DFglm, test="Chisq")
-}
+}}
 \keyword{ts}

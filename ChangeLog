@@ -1,3 +1,14 @@
+Thu Nov 8 19:11:00 CET, Christophe Pouzat <christophe.pouzat@gmail.com>
+	* DESCRIPTION: Version 0.3-7
+	* man: move the examples in crossGeneral and gsspsth in the "dontrun" category.
+	
+Thu Nov 8 12:32:00 CET, Christophe Pouzat <christophe.pouzat@gmail.com>
+	* DESCRIPTION: Version 0.3-6
+	* inst/doc: remove unecessary vignette source, updated vignette.
+	* vignettes: updated vignettes (minor changes) and bib file added.
+	* man: moves a lot of the examples in the "dontrun" category.
+	* R: Bug fix in plot.psth function thanks to Gregory Jefferis.
+	
 Wed Apr 11 15:42:00 CET, Christophe Pouzat <christophe.pouzat@gmail.com>
 	* DESCRIPTION: Version 0.3-5
 	* R: minor syntax fix (env= -> envir=, nr= -> nrow=). 

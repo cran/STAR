@@ -169,6 +169,7 @@ gsspsth0(repeatedTrain, binSize = 0.025, plot = FALSE, ...)
   \code{\link{simulate}}
 }
 \examples{
+\dontrun{
 ## Get the e070528citronellal data set into workspace
 data(e070528citronellal)
 ## Compute gsspsth without a plot for neuron 1
@@ -185,7 +186,7 @@ plot(n1CitrGSSPSTH0$mids,n1CitrGSSPSTH0$counts,type="l")
 theBS <- diff(n1CitrGSSPSTH0[["mids"]])[1]
 Y <- n1CitrGSSPSTH0$lambdaFct(n1CitrGSSPSTH0$mids)*theBS*n1CitrGSSPSTH0$nbTrials
 lines(n1CitrGSSPSTH0$mids,Y,col=4,lwd=2)
-\dontrun{
+
 ## check the (absence of) effect of the pre-binning by using a smaller
 ## and larger one, say 10 and 75 ms
 n1CitrGSSPSTH0_10 <- gsspsth0(e070528citronellal[[1]],binSize=0.01)
@@ -195,13 +196,12 @@ plot(n1CitrGSSPSTH0_10,colCI="grey50")
 ## add to it the estimate obtained with the "low resolution" one
 Y_75 <- n1CitrGSSPSTH0_75$lambdaFct(n1CitrGSSPSTH0_10$mids)
 lines(n1CitrGSSPSTH0_10$mids,Y_75,col=2,lwd=2)
-}
+
 ## simulate data from the first fitted model
 s1 <- simulate(n1CitrGSSPSTH0)
 ## look at the result
 s1
 
-\dontrun{
 ## Do the same thing with gsspsth
 n1CitrGSSPSTH <- gsspsth(e070528citronellal[[1]])
 plot(n1CitrGSSPSTH,stim=c(6.14,6.64),colCI=2)

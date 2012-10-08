@@ -63,6 +63,7 @@ renewalTestPlot(spikeTrain, lag.max = NULL,
   \code{\link{acf.spikeTrain}}
 }
 \examples{
+\dontrun{
 ## Apply the test of Ogata (1988) shallow shock data
 data(ShallowShocks)
 renewalTestPlot(ShallowShocks$Date,d=3)
@@ -97,7 +98,7 @@ myLnormPara2 <- matrix(c(log(0.01),0.25,log(0.05),0.25),2,2,byrow=TRUE)
 train2 <-
 cumsum(rlnorm(isi.nb+1,myLnormPara2[states2,1],myLnormPara2[states2,2]))
 ## make the test
-renewalTestPlot(train2)
+renewalTestPlot(train2)}
 }
 \keyword{ts}
 \keyword{survival}

@@ -96,8 +96,8 @@ plot.psth <- function(x,
     if (!smoothOne) xlim <- range(x$breaks)
     else xlim <- range(x$mids) + c(-0.5,0.5)*x$breaks["step"]
   }  
-  if (missing(ylim)) 
-    ylim <- c(0, ifelse(withCI, max(x$freq), max(x$ciUp)))
+  if (missing(ylim))
+    ylim <- c(0, ifelse(withCI, max(x$ciUp), max(x$freq))) ## Bug fix thanks to Gregory Jefferis
 
   
 

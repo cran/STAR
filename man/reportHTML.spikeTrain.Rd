@@ -134,6 +134,7 @@
   \code{\link{gamlockedTrain}}
 }
 \examples{
+\dontrun{
 ## load e070528spont data set
 data(e070528spont)
 ## perform a standard analysis on neuron 1, looking for cross-correlations
@@ -141,7 +142,7 @@ data(e070528spont)
 ## Store the results under the generic name: e070528spontN1
 reportHTML(e070528spont[["neuron 1"]],"e070528spontN1",otherST=e070528spont[-1],laglim=c(-1,1)*0.25,forceTT=FALSE)
 ## Neuron 1 of e070528spont is exceptional in that it can be well
-## described by a renewal process...
+## described by a renewal process...}
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.

@@ -240,6 +240,7 @@ If you wan these tests to be meaningful \emph{do not} apply them to the
   \code{\link{ks.test}}
 }
 \examples{
+\dontrun{
 ## load one spike train data set of STAR
 data(e060824spont)
 ## Create the CountingProcessSamplePath object
@@ -437,7 +438,6 @@ cpsp1t <- transformCPSP(cpsp1,function(t) ciFct(t,cpsp1$ppspFct()))
 cpsp1t.summary <- summary(cpsp1t)
 cpsp1t.summary
 plot(cpsp1t.summary)
-\dontrun{
 ## compare the finite sample performances of the
 ## Kolmogorov test (test the uniformity of the
 ## jump times given the number of events) with the

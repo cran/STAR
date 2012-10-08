@@ -172,8 +172,8 @@
 \author{
   Christophe Pouzat \\
   \\
-  Laboratoire de Physiologie C\'er\'ebrale, CNRS UMR 8118\\
-  UFR biom\'edicale de l'universit\'e Paris-Descartes\\
+  MAP5, CNRS UMR 8145\\
+  UFR de math\'ematiques et informatique de l'universit\'e Paris-Descartes\\
   45, rue des Saints-P\`eres\\
   75006 Paris, France
 }
@@ -192,14 +192,9 @@ options(width=80,SweaveSyntax="SweaveSyntaxNoweb")
 dir.create("report")
 dir.create("figs")
 set.seed(20061001)
+Sys.setlocale(category="LC_MESSAGES",locale="C")
 @ 
 
-<<get bibtex file, echo=FALSE, results=hide, eval=TRUE>>=
-myURL <- "http://www.biomedicale.univ-paris5.fr/physcerv/C_Pouzat/Data_folder"
-myFileName <- "Big.bib"
-myFullName <- paste(myURL,"/",myFileName,sep="")
-download.file(myFullName, "Big.bib")
-@ 
 \maketitle
 
 \tableofcontents
@@ -215,7 +210,7 @@ What follows is a detailed description of how I presently estimate the
   \InFo~should be called more properly the \InPr since it is in general a
   function of random variables~\citet[p 51]{AndersenEtAl_1993}} of
 spike trains recorded in the \emph{spontaneous regime}~using
-\STAR~functionalities. 
+\STAR{} functionalities. 
 
 This a ``short'' version of the vignette describing rather breifly the
 analysis of a single spike train. A longer,more comprehensive version
@@ -280,7 +275,7 @@ now most usual convention~\citet[p 51]{AndersenEtAl_1993}, while
 We will start with the analysis
 of the discharge of \texttt{neuron 1} in data set:
 \texttt{e060824spont}. I assume that you have installed the last
-version of \STAR~from your favorite \textsf{CRAN} server. Then the
+version of \STAR{} from your favorite \textsf{CRAN} server. Then the
 first thing to do once \R~has been started is to load the package:\marginpar{\library}
 <<load STAR, results=hide>>=
 library(STAR)
@@ -570,7 +565,7 @@ in~\citet[Sec. 2.5.2]{PouzatChaffiol_2008} and in depth in~\citet{Gu_2002}.
 The model estimation will moreover be performed by function
 \gssanova~of Chong Gu's package \gss. The data ``fed'' to this
 function have to be in a \textsf{data frame}\index{data frame}
-format. Function \mkGLMdf~of \STAR~will allow us to build a
+format. Function \mkGLMdf~of \STAR{} will allow us to build a
 \textsf{data frame} from a \spikeTrain~\object. Since our preliminary
 analysis lead us to rule out an interaction between the two neurons of
 our data set, we do not need to include a variable containing the
@@ -667,7 +662,7 @@ dev.off()
 In the sequel we will adopt the slightly extrem ``mapping to uniform''
 approach, that is, we are going to estimate a smooth version of the
 \CDF~(\cdf) and use it to transform our independent variables. The
-\STAR~function doing this job is \mkMtwoU. It can be called on part of
+\STAR{} function doing this job is \mkMtwoU. It can be called on part of
 the data set in order to perform a mapping of the other part
 independent of the (mapped) data. For our two variables \texttt{lN.1}
 and \texttt{i1} we call:\marginpar{\mkMtwoU}
@@ -760,13 +755,14 @@ We are going to fit our models using function \gssanova~of package
 \gss. The most straightforward way to fit the model of
 Eq.~\eqref{eq:6} to the first half of our data set is:\marginpar{\gssanova} 
 <<GF1e e060824spont_1 display, eval=FALSE>>=
-GF1e <- gssanova(event ~ e1t*i1t, data=subset(DFA,time<=29.5),family="binomial",seed=20061001)
+GF1e <- gssanova(event ~ e1t*i1t, data=subset(DFA,time<=29.5),
+                 family="binomial",seed=20061001)
 @ 
 <<GF1e e060824spont_1 do it, echo=FALSE, results=hide, cache=true>>=
 GF1e.time <- system.time(GF1e <- gssanova(event ~ e1t*i1t, data=subset(DFA,time<=29.5),family="binomial",seed=20061001))
 @ 
 The time needed to carry out this fit on the present machine is,
-\Sexpr{round(GF1e.time[3],digits=2)} s\footnote{For reference, it takes
+\Sexpr{round(GF1e.time[3],digits=2)} s\footnote{The ``present machine'' is an ASUS netbook F301A with an Intel B970 CPU at 2.3 GHz with 4 GB of RAM, running ARCH Linux. For reference, it takes
 88.23 s on an Intel Core2 Duo P9500 at 2.53 GHz with 4 GB of RAM,
 running Ubuntu 9.04, R-2.9.1 link to the ATLAS version of BLAS
 (version 3.8.3) everything being compiled with gcc 4.3.3.}
@@ -832,7 +828,8 @@ In order to fully validate our model we are going to exchange the
 fitting and testing part, that is, fit the same model as before to the
 last half of the data set before testing it on the first half:
 <<GF1l e060824spont_1 do it, echo=FALSE, results=hide, cache=true>>=
-GF1l.time <- system.time(GF1l <- gssanova(event ~ e1t*i1t, data=subset(DFA,time>29.5),family="binomial",seed=20061001))
+GF1l.time <- system.time(GF1l <- gssanova(event ~ e1t*i1t, data=subset(DFA,time>29.5),
+                                          family="binomial",seed=20061001))
 @ 
 <<GF1l e060824spont_1 display, eval=FALSE>>=
 GF1l <- gssanova(event ~ e1t*i1t, data=subset(DFA,time>29.5),family="binomial",seed=20061001)
@@ -888,10 +885,12 @@ between variable \texttt{e1t} and variable \texttt{i1t}. Since the
 latter gives good fits it is interesting to try simplifying it to see
 if a model without interaction would not give as good results we proceed as follows:
 <<GF2 sequential, eval=TRUE, cache=true>>=
-GF2e <- gssanova(event ~ e1t+i1t, data=subset(DFA,time<=29.5),family="binomial",seed=19731004)
+GF2e <- gssanova(event ~ e1t+i1t, data=subset(DFA,time<=29.5),
+                 family="binomial",seed=19731004)
 tt.GF2e <- GF2e %tt% subset(DFA,time>29.5)
 (tt.GF2e.summary <- summary(tt.GF2e))
-GF2l <- gssanova(event ~ e1t+i1t, data=subset(DFA,time>29.5),family="binomial",seed=19731004)
+GF2l <- gssanova(event ~ e1t+i1t, data=subset(DFA,time>29.5),
+                 family="binomial",seed=19731004)
 tt.GF2l <- GF2l %tt% subset(DFA,time<=29.5)
 (tt.GF2l.summary <- summary(tt.GF2l))
 @ 
@@ -934,12 +933,13 @@ one should we choose?
 One way to compare two alternative models is to look at the
 probability they give to data \emph{which were not the data used to
   fit them}. This can be done with function \predictLogProb~of
-\STAR~which returns the log probability of some data (passed as the
+\STAR{} which returns the log probability of some data (passed as the
 second argument to the function) under some model (passed as the first
 argument). Here the log probability of our data using the simpler
 model is:\marginpar{\predictLogProb}
 <<log prob of simpe model, cache=true>>=
-(GF2.logProb <- predictLogProb(GF2e,subset(DFA,time>29.5))+predictLogProb(GF2l,subset(DFA,time<=29.5)))
+(GF2.logProb <- predictLogProb(GF2e,subset(DFA,time>29.5))+
+ predictLogProb(GF2l,subset(DFA,time<=29.5)))
 @
 <<log prob of simpe model print, echo=FALSE>>=
 GF2.logProb
@@ -998,9 +998,9 @@ dev.off()
 \label{sec:use-quickpredict}
 
 A finner control of the plots can be obtained with the
-\quickPredict~function of \STAR~and of its associated \plot, \contour,
+\quickPredict~function of \STAR{} and of its associated \plot, \contour,
 \image~and \persp~\method s. The easiest way to fine tune a term
-effect plot with \STAR~is to generate a
+effect plot with \STAR{} is to generate a
 \quickPredict~\object~containing the term effect first. For the first
 two terms, \texttt{e1t} and \texttt{i1t} of our model this is done
 simply with:\marginpar{\quickPredict}
@@ -1184,7 +1184,7 @@ sessionInfo()
  
 \pagebreak
 \bibliographystyle{plainnat}
-\bibliography{Big}
+\bibliography{IEwSTARshortBib}
 
 \pagebreak
 

@@ -244,6 +244,7 @@ mkTightBMtargetFct(ci = 0.95, tMax = 1, h = 0.001, logScale = FALSE)
   \code{\link{pinvgauss}}
 }
 \examples{
+\dontrun{
 ## Reproduce Table 1 (p 101) of Loader and Deely (1987)
 ## define a vector of n values
 nLD <- c(8,16,32,64,128)
@@ -438,7 +439,6 @@ exp(p95$par)
 d95 <- crossTight(a=exp(p95$par[1]),b=exp(p95$par[2]),withBound=TRUE,logScale=FALSE)
 ## print out the summary
 summary(d95)
-\dontrun{
 ## Do the same for the 0.01 probability of first passage
 target99 <- mkTightBMtargetFct(ci=0.99)
 p99 <- optim(p95$par,target99,method="BFGS")

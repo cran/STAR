@@ -75,6 +75,7 @@ mkGLMdf(obj, delta, lwr, upr)
   \code{\link{as.repeatedTrain}}
 }
 \examples{
+\dontrun{
 ## Analysis of a "simple" spontaneous train
 ## load the data
 data(e060824spont)
@@ -106,7 +107,6 @@ tt.l.summary <- summary(tt.l)
 tt.l.summary
 plot(tt.l.summary,which=c(1,2,4,6))
 
-\dontrun{
 ## Start with simulatd data #####
 ## Use thinning method and for that define a couple
 ## of functions
